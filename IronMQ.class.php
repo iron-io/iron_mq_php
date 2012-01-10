@@ -9,9 +9,36 @@ class Http_Exception extends Exception{
     const PRECONDITION_FAILED = 412;
     const INTERNAL_ERROR = 500;
 }
+
 class IronMQ_Exception extends Exception{
 
 }
+
+class JSON_Exception extends Exception {
+    public $error = null;
+    public $error_code = JSON_ERROR_NONE;
+
+    function __construct($error_code) {
+        $this->error_code = $error_code;
+        switch($error_code) {
+            case JSON_ERROR_DEPTH:
+                $this->error = 'Maximum stack depth exceeded.';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                $this->error = "Unexpected control characted found.";
+                break;
+            case JSON_ERROR_SYNTAX:
+                $this->error = "Syntax error, malformed JSON";
+                break;
+        }
+        parent::__construct();
+    }
+
+    function __toString() {
+        return $this->error;
+    }
+}
+
 
 class IronMQ_Message {
     private $body;
@@ -167,6 +194,10 @@ class IronMQ{
     public function getProjects(){
         $this->setJsonHeaders();
         $projects = json_decode($this->apiCall(self::GET, 'projects'));
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
         return $projects->projects;
     }
 
@@ -174,7 +205,12 @@ class IronMQ{
         $this->setProjectId($project_id);
         $this->setJsonHeaders();
         $url =  "projects/{$this->project_id}";
-        return json_decode($this->apiCall(self::GET, $url));
+        $response = json_decode($this->apiCall(self::GET, $url));
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
+        return $response;
     }
 
     public function postProject($name){
@@ -185,6 +221,10 @@ class IronMQ{
         $this->setCommonHeaders();
         $res = $this->apiCall(self::POST, 'projects', $request);
         $responce = json_decode($res);
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
         return $responce->id;
     }
 
@@ -203,6 +243,10 @@ class IronMQ{
         }
         $this->setJsonHeaders();
         $queues = json_decode($this->apiCall(self::GET, $url, $params));
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
         return $queues;
     }
 
@@ -211,6 +255,10 @@ class IronMQ{
         $url = "projects/{$this->project_id}/queues/{$queue_name}";
         $this->setJsonHeaders();
         $queue = json_decode($this->apiCall(self::GET, $url));
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
         return $queue;
     }
 
@@ -224,6 +272,10 @@ class IronMQ{
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $res = $this->apiCall(self::POST, $url, $req);
         $response = json_decode($res);
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
         return $response;
     }
 
@@ -240,7 +292,11 @@ class IronMQ{
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $res = $this->apiCall(self::POST, $url, $req);
         $response = json_decode($res);
-        return $response;# TODO: double-check that the API only returns the last message ID
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
+        return $response;
     }
 
     public function getMessages($project_id = '', $queue_name, $count=1) {
@@ -252,9 +308,12 @@ class IronMQ{
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
-        $this->debug("Raw Response", $response);
         $messages = json_decode($response);
-        return messages;
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
+        return $messages;
     }
 
     public function getMessage($project_id = '', $queue_name) {
@@ -278,41 +337,6 @@ class IronMQ{
     }
 
     /* PRIVATE FUNCTIONS */
-
-    /**
-     *
-     * @param string $project_id
-     * @param string $name
-     * @param array $options options contain:
-     *   start_at OR delay — required - start_at is time of first run. Delay is number of seconds to wait before starting.
-     *   run_every         — optional - Time in seconds between runs. If omitted, task will only run once.
-     *   end_at            — optional - Time tasks will stop being enqueued. (Should be a Time or DateTime object.)
-     *   run_times         — optional - Number of times to run task. For example, if run_times: is 5, the task will run 5 times.
-     *   priority          — optional - Priority queue to run the job in (0, 1, 2). p0 is default. Run at higher priorities to reduce time jobs may spend in the queue once they come off schedule. Same as priority when queuing up a task.
-     * @param array $payload
-     * @return mixed
-     */
-    private function postSchedule($project_id, $name, $options, $payload = array()){
-
-        $this->setProjectId($project_id);
-        $url = "projects/{$this->project_id}/schedules";
-
-        $shedule = array(
-           'name' => $name,
-           'code_name' => $name,
-           'payload' => json_encode($payload),
-        );
-        $request = array(
-           'schedules' => array(
-               array_merge($shedule, $options)
-           )
-        );
-
-        $this->setCommonHeaders();
-        $res = $this->apiCall(self::POST, $url, $request);
-        $shedules = json_decode($res);
-        return $shedules->schedules[0]->id;
-    }
 
     private function compiledHeaders(){
 
