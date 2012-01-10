@@ -60,15 +60,19 @@ class IronMQ_Message {
      * - expires_in: How long, in seconds, to keep the item on the queue before it is deleted. Defaults to 604800 (7 days). Maximum is 2592000 (30 days).
      */
     function __construct($message) {
-        $this->setBody($message['body']);
-        if(array_key_exists("timeout", $message)) {
-            $this->setTimeout($message['timeout']);
-        }
-        if(array_key_exists("delay", $message)) {
-            $this->setDelay($message['delay']);
-        }
-        if(array_key_exists("expires_in", $message)) {
-            $this->setExpiresIn($message['expires_in']);
+        if(is_string($message)) {
+            $this->setBody($message);
+        } elseif(is_array($message)) {
+            $this->setBody($message['body']);
+            if(array_key_exists("timeout", $message)) {
+                $this->setTimeout($message['timeout']);
+            }
+            if(array_key_exists("delay", $message)) {
+                $this->setDelay($message['delay']);
+            }
+            if(array_key_exists("expires_in", $message)) {
+                $this->setExpiresIn($message['expires_in']);
+            }
         }
     }
 
