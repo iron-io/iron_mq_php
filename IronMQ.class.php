@@ -67,7 +67,7 @@ class IronMQ_Message {
         if(array_key_exists("delay", $message)) {
             $this->setDelay($message['delay']);
         }
-        if(array_key_exists("expires_in")) {
+        if(array_key_exists("expires_in", $message)) {
             $this->setExpiresIn($message['expires_in']);
         }
     }
