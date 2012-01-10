@@ -197,11 +197,12 @@ class IronMQ{
     public function getQueues($project_id = '', $page = 0){
         $this->setProjectId($project_id);
         $url = "projects/{$this->project_id}/queues";
+        $params = array();
         if($page > 0) {
-            $url .= "?page=".$page;
+            $params['page'] = $page;
         }
         $this->setJsonHeaders();
-        $queues = json_decode($this->apiCall(self::GET, $url));
+        $queues = json_decode($this->apiCall(self::GET, $url, $params));
         return $queues;
     }
 
@@ -245,11 +246,12 @@ class IronMQ{
     public function getMessages($project_id = '', $queue_name, $count=1) {
         $this->setProjectId($project_id);
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
+        $params = array();
         if($count > 1) {
-            $url .= "?count=".$count;
+            $params['count'] = $count;
         }
         $this->setJsonHeaders();
-        $response = $this->apiCall(self::GET, $url);
+        $response = $this->apiCall(self::GET, $url, $params);
         $this->debug("Raw Response", $response);
         $messages = json_decode($response);
         return messages;
