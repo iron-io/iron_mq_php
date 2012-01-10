@@ -249,7 +249,9 @@ class IronMQ{
             $url .= "?count=".$count;
         }
         $this->setJsonHeaders();
-        $messages = json_decode($this->apiCall(self::GET, $url));
+        $response = $this->apiCall(self::GET, $url);
+        $this->debug("Raw Response", $response);
+        $messages = json_decode($response);
         return messages;
     }
 
