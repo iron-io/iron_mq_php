@@ -49,20 +49,27 @@ class IronMQ_Message {
     const max_expires_in = 2592000;
 
     /**
-     * @param string $body
-     *        The message data, as a string.
-     * @param int $timeout
-     *        Optional. Timeout, in seconds. After timeout, item will be placed back on queue. Defaults to 60.
-     * @param int $delay
-     *        Optional. The item will not be available on the queue until this many seconds have passed. Defaults to 0.
-     * @param int $expires_in
-     *        Optional. How long, in seconds, to keep the item on the queue before it is deleted. Defaults to 604800 (7 days). Maximum is 2592000 (30 days).
+     * @param array|string $message
+     *        An array of message properties or a string of the message body.
+     * Fields in message array:
+     * Required:
+     * - body: The message data, as a string.
+     * Optional:
+     * - timeout: Timeout, in seconds. After timeout, item will be placed back on queue. Defaults to 60.
+     * - delay: The item will not be available on the queue until this many seconds have passed. Defaults to 0.
+     * - expires_in: How long, in seconds, to keep the item on the queue before it is deleted. Defaults to 604800 (7 days). Maximum is 2592000 (30 days).
      */
-    function __construct($body, $timeout = null, $delay = null, $expires_in = null) {
-        $this->setBody($body);
-        $this->setTimeout($timeout);
-        $this->setDelay($delay);
-        $this->setExpiresIn($expires_in);
+    function __construct($message) {
+        $this->setBody($message['body']);
+        if(array_key_exists("timeout", $message)) {
+            $this->setTimeout($message['timeout']);
+        }
+        if(array_key_exists("delay", $message)) {
+            $this->setDelay($message['delay']);
+        }
+        if(array_key_exists("expires_in")) {
+            $this->setExpiresIn($message['expires_in']);
+        }
     }
 
     public function getBody() {
@@ -106,8 +113,8 @@ class IronMQ_Message {
     }
 
     public function setExpiresIn($expires_in) {
-        if($expires_in > max_expires_in) {
-            throw new InvalidArgumentException("Expires In can't be greater than ".max_expires_in.".");
+        if($expires_in > $this->max_expires_in) {
+            throw new InvalidArgumentException("Expires In can't be greater than ".$this->max_expires_in.".");
         } else {
             $this->expires_in = $expires_in;
         }
@@ -263,7 +270,7 @@ class IronMQ{
     }
 
     public function postMessage($project_id = '', $queue_name, $message) {
-        $msg = new IronMQ_Message($message['body'], $message['timeout'], $message['delay'], $message['expires_in']);
+        $msg = new IronMQ_Message($message);
         $req = array(
             "messages" => array($msg->asArray())
         );
@@ -284,7 +291,7 @@ class IronMQ{
             "messages" => array()
         );
         foreach($messages as $message) {
-            $msg = new IronMQ_Message($message['body'], $message['timeout'], $message['delay'], $message['expires_in']);
+            $msg = new IronMQ_Message($message);
             array_push($req['messages'], $msg->asArray());
         }
         $this->setProjectId($project_id);
