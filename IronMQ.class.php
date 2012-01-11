@@ -287,7 +287,12 @@ class IronMQ{
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
-        return self::json_decode($response);
+        $result = self::json_decode($response);
+        if(count($result->messages) < 1) {
+            return null;
+        } else {
+            return $result;
+        }
     }
 
     public function getMessage($queue_name) {
