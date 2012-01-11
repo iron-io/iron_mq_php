@@ -156,7 +156,7 @@ class IronMQ{
 
     public  $debug_enabled = false;
 
-    private $required_config_fields = array('token');
+    private $required_config_fields = array('token','project_id');
     private $default_values = array(
         'protocol'    => 'http',
         'host'        => 'mq-aws-us-east-1.iron.io',
@@ -177,8 +177,8 @@ class IronMQ{
      *
      * Required:
      * - token
-     * Optional:
      * - project_id
+     * Optional:
      * - protocol
      * - host
      * - port
@@ -187,7 +187,7 @@ class IronMQ{
     function __construct($config_file_or_options){
         $config = $this->getConfigData($config_file_or_options);
         $token              = $config['token'];
-        $project_id         = empty($config['project_id']) ? '' : $config['project_id'];
+        $project_id         = $config['project_id'];
 
         $protocol           = empty($config['protocol'])   ? $this->default_values['protocol']    : $config['protocol'];
         $host               = empty($config['host'])       ? $this->default_values['host']        : $config['host'];
@@ -216,11 +216,10 @@ class IronMQ{
         return $projects->projects;
     }
 
-    public function getProjectDetails($project_id = ''){
-        $this->setProjectId($project_id);
+    public function getProjectDetails(){
         $this->setJsonHeaders();
         $url =  "projects/{$this->project_id}";
-        return self::json_decode($this->apiCall(self::GET, $url));;
+        return self::json_decode($this->apiCall(self::GET, $url));
     }
 
     public function postProject($name){
@@ -234,14 +233,12 @@ class IronMQ{
         return $responce->id;
     }
 
-    public function deleteProject($project_id){
-        $this->setProjectId($project_id);
+    public function deleteProject(){
         $url = "projects/{$this->project_id}";
         return $this->apiCall(self::DELETE, $url);
     }
 
-    public function getQueues($project_id = '', $page = 0){
-        $this->setProjectId($project_id);
+    public function getQueues($page = 0){
         $url = "projects/{$this->project_id}/queues";
         $params = array();
         if($page > 0) {
@@ -251,26 +248,24 @@ class IronMQ{
         return self::json_decode($this->apiCall(self::GET, $url, $params));
     }
 
-    public function getQueue($project_id = '', $queue_name) {
-        $this->setProjectId($project_id);
+    public function getQueue($queue_name) {
         $url = "projects/{$this->project_id}/queues/{$queue_name}";
         $this->setJsonHeaders();
         return self::json_decode($this->apiCall(self::GET, $url));
     }
 
-    public function postMessage($project_id = '', $queue_name, $message) {
+    public function postMessage($queue_name, $message) {
         $msg = new IronMQ_Message($message);
         $req = array(
             "messages" => array($msg->asArray())
         );
-        $this->setProjectId($project_id);
         $this->setCommonHeaders();
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $res = $this->apiCall(self::POST, $url, $req);
         return self::json_decode($res);
     }
 
-    public function postMessages($project_id = '', $queue_name, $messages) {
+    public function postMessages($queue_name, $messages) {
         $req = array(
             "messages" => array()
         );
@@ -278,15 +273,13 @@ class IronMQ{
             $msg = new IronMQ_Message($message);
             array_push($req['messages'], $msg->asArray());
         }
-        $this->setProjectId($project_id);
         $this->setCommonHeaders();
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $res = $this->apiCall(self::POST, $url, $req);
         return self::json_decode($res);
     }
 
-    public function getMessages($project_id = '', $queue_name, $count=1) {
-        $this->setProjectId($project_id);
+    public function getMessages($queue_name, $count=1) {
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $params = array();
         if($count > 1) {
@@ -294,22 +287,20 @@ class IronMQ{
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
-        return self::json_decode($response);;
+        return self::json_decode($response);
     }
 
-    public function getMessage($project_id = '', $queue_name) {
-        return $this->getMessages($project_id, $queue_name, 1);
+    public function getMessage($queue_name) {
+        return $this->getMessages($queue_name, 1);
     }
 
-    public function deleteMessage($project_id = '', $queue_name, $message_id) {
-        $this->setProjectId($project_id);
+    public function deleteMessage($queue_name, $message_id) {
         $this->setCommonHeaders();
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages/{$message_id}";
         return $this->apiCall(self::DELETE, $url);
     }
 
-    public function deleteTask($project_id, $task_id){
-        $this->setProjectId($project_id);
+    public function deleteTask($task_id){
         $this->setCommonHeaders();
         $this->headers['Accept'] = "text/plain";
         unset($this->headers['Content-Type']);
