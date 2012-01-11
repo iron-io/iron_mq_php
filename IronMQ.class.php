@@ -156,7 +156,13 @@ class IronMQ{
 
     public  $debug_enabled = false;
 
-    private $required_config_fields = array('token','protocol','host','port','api_version');
+    private $required_config_fields = array('token');
+    private $default_values = array(
+        'protocol'    => 'http',
+        'host'        => 'mq-aws-us-east-1.iron.io',
+        'port'        => '80',
+        'api_version' => '1',
+    );
 
     private $url;
     private $token;
@@ -168,29 +174,31 @@ class IronMQ{
      * @param string|array $config_file_or_options
      *        Array of options or name of config file.
      * Fields in options array or in config:
+     *
      * Required:
      * - token
+     * Optional:
+     * - project_id
      * - protocol
      * - host
      * - port
      * - api_version
-     * Optional:
-     * - default_project_id
      */
     function __construct($config_file_or_options){
         $config = $this->getConfigData($config_file_or_options);
         $token              = $config['token'];
-        $protocol           = $config['protocol'];
-        $host               = $config['host'];
-        $port               = $config['port'];
-        $api_version        = $config['api_version'];
-        $default_project_id = empty($config['default_project_id'])?'':$config['default_project_id'];
+        $project_id         = empty($config['project_id']) ? '' : $config['project_id'];
+
+        $protocol           = empty($config['protocol'])   ? $this->default_values['protocol']    : $config['protocol'];
+        $host               = empty($config['host'])       ? $this->default_values['host']        : $config['host'];
+        $port               = empty($config['port'])       ? $this->default_values['port']        : $config['port'];
+        $api_version        = empty($config['api_version'])? $this->default_values['api_version'] : $config['api_version'];
 
         $this->url          = "$protocol://$host:$port/$api_version/";
         $this->token        = $token;
         $this->api_version  = $api_version;
         $this->version      = $api_version;
-        $this->project_id   = $default_project_id;
+        $this->project_id   = $project_id;
     }
 
     public function setProjectId($project_id) {
@@ -204,11 +212,7 @@ class IronMQ{
 
     public function getProjects(){
         $this->setJsonHeaders();
-        $projects = json_decode($this->apiCall(self::GET, 'projects'));
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
-        }
+        $projects = self::json_decode($this->apiCall(self::GET, 'projects'));
         return $projects->projects;
     }
 
@@ -216,12 +220,7 @@ class IronMQ{
         $this->setProjectId($project_id);
         $this->setJsonHeaders();
         $url =  "projects/{$this->project_id}";
-        $response = json_decode($this->apiCall(self::GET, $url));
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
-        }
-        return $response;
+        return self::json_decode($this->apiCall(self::GET, $url));;
     }
 
     public function postProject($name){
@@ -231,11 +230,7 @@ class IronMQ{
 
         $this->setCommonHeaders();
         $res = $this->apiCall(self::POST, 'projects', $request);
-        $responce = json_decode($res);
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
-        }
+        $responce = self::json_decode($res);
         return $responce->id;
     }
 
@@ -253,24 +248,14 @@ class IronMQ{
             $params['page'] = $page;
         }
         $this->setJsonHeaders();
-        $queues = json_decode($this->apiCall(self::GET, $url, $params));
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
-        }
-        return $queues;
+        return self::json_decode($this->apiCall(self::GET, $url, $params));
     }
 
     public function getQueue($project_id = '', $queue_name) {
         $this->setProjectId($project_id);
         $url = "projects/{$this->project_id}/queues/{$queue_name}";
         $this->setJsonHeaders();
-        $queue = json_decode($this->apiCall(self::GET, $url));
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
-        }
-        return $queue;
+        return self::json_decode($this->apiCall(self::GET, $url));
     }
 
     public function postMessage($project_id = '', $queue_name, $message) {
@@ -282,12 +267,7 @@ class IronMQ{
         $this->setCommonHeaders();
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $res = $this->apiCall(self::POST, $url, $req);
-        $response = json_decode($res);
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
-        }
-        return $response;
+        return self::json_decode($res);
     }
 
     public function postMessages($project_id = '', $queue_name, $messages) {
@@ -302,12 +282,7 @@ class IronMQ{
         $this->setCommonHeaders();
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $res = $this->apiCall(self::POST, $url, $req);
-        $response = json_decode($res);
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
-        }
-        return $response;
+        return self::json_decode($res);
     }
 
     public function getMessages($project_id = '', $queue_name, $count=1) {
@@ -319,12 +294,7 @@ class IronMQ{
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
-        $messages = json_decode($response);
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
-        }
-        return $messages;
+        return self::json_decode($response);;
     }
 
     public function getMessage($project_id = '', $queue_name) {
@@ -461,4 +431,14 @@ class IronMQ{
             echo "{$var_name}: ".var_export($variable,true)."\n";
         }
     }
+
+    private static function json_decode($response){
+        $data = json_decode($response);
+        $json_error = json_last_error();
+        if($json_error != JSON_ERROR_NONE) {
+            throw new JSON_Exception($json_error);
+        }
+        return $data;
+    }
+
 }
