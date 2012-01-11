@@ -254,6 +254,13 @@ class IronMQ{
         return self::json_decode($this->apiCall(self::GET, $url));
     }
 
+    /**
+     * Push a message on the queue
+     *
+     * @param string $queue_name Name of the queue.
+     * @param array|string $message
+     * @return mixed
+     */
     public function postMessage($queue_name, $message) {
         $msg = new IronMQ_Message($message);
         $req = array(
