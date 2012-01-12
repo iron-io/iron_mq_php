@@ -43,7 +43,19 @@ $ironmq = new IronMQ('config.ini');
 
 ```php
 <?php
-$ironmq->postMessage("test_queue", "Hello world"));
+$ironmq->postMessage("test_queue", "Hello world");
+```
+
+More complex example:
+
+```php
+<?php
+$ironmq->postMessage("test_queue", array(
+    "body" => "Test Message",
+    "timeout" => 120, # Timeout, in seconds. After timeout, item will be placed back on queue. Defaults to 60.
+    'delay' => 5, # The item will not be available on the queue until this many seconds have passed. Defaults to 0.
+    'expires_in' => 2*24*3600 # How long, in seconds, to keep the item on the queue before it is deleted.
+));
 ```
 
 ### **Pop** a message off the queue:
@@ -51,8 +63,8 @@ $ironmq->postMessage("test_queue", "Hello world"));
 <?php
 $ironmq->getMessage("test_queue");
 ```
-When you pop/get a message from the queue, it will NOT be deleted. It will eventually go back onto the queue after
-a timeout if you don't delete it (default timeout is 10 minutes).
+When you pop/get a message from the queue, it will NOT be deleted.
+It will eventually go back onto the queue after a timeout if you don't delete it (default timeout is 60 seconds).
 ### **Delete** a message from the queue:
 ```php
 <?php

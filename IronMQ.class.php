@@ -1,5 +1,19 @@
 <?php
+/**
+ * PHP client for IronMQ
+ * IronMQ is a scalable, reliable, high performance message queue in the cloud.
+ *
+ * @link https://github.com/iron-io/iron_mq_php
+ * @link http://www.iron.io/products/mq
+ * @link http://docs.iron.io/
+ * @version 1.0
+ * @package IronMQPHP
+ * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
+ */
 
+/**
+ * The Http_Exception class represents an HTTP response status that is not 200 OK.
+ */
 class Http_Exception extends Exception{
     const NOT_MODIFIED = 304;
     const BAD_REQUEST = 400;
@@ -14,6 +28,9 @@ class IronMQ_Exception extends Exception{
 
 }
 
+/**
+ * The JSON_Exception class represents an failures of decoding json strings.
+ */
 class JSON_Exception extends Exception {
     public $error = null;
     public $error_code = JSON_ERROR_NONE;
@@ -49,6 +66,8 @@ class IronMQ_Message {
     const max_expires_in = 2592000;
 
     /**
+     * Create a new message.
+     *
      * @param array|string $message
      *        An array of message properties or a string of the message body.
      * Fields in message array:
@@ -89,7 +108,7 @@ class IronMQ_Message {
     }
 
     public function getTimeout() {
-        if(!empty($this->timeout) || $this->timeout == 0) {# 0 is considered empty, but we want people to be able to set a timeout of 0
+        if(!empty($this->timeout) || $this->timeout === 0) {# 0 is considered empty, but we want people to be able to set a timeout of 0
             return $this->timeout;
         } else {
             return null;
@@ -117,8 +136,8 @@ class IronMQ_Message {
     }
 
     public function setExpiresIn($expires_in) {
-        if($expires_in > $this->max_expires_in) {
-            throw new InvalidArgumentException("Expires In can't be greater than ".$this->max_expires_in.".");
+        if($expires_in > self::max_expires_in) {
+            throw new InvalidArgumentException("Expires In can't be greater than ".self::max_expires_in.".");
         } else {
             $this->expires_in = $expires_in;
         }
@@ -201,6 +220,12 @@ class IronMQ{
         $this->project_id   = $project_id;
     }
 
+    /**
+     * Switch active project
+     *
+     * string @param $project_id Project ID
+     * @throws InvalidArgumentException
+     */
     public function setProjectId($project_id) {
         if (!empty($project_id)){
           $this->project_id = $project_id;
@@ -208,34 +233,6 @@ class IronMQ{
         if (empty($this->project_id)){
             throw new InvalidArgumentException("Please set project_id");
         }
-    }
-
-    public function getProjects(){
-        $this->setJsonHeaders();
-        $projects = self::json_decode($this->apiCall(self::GET, 'projects'));
-        return $projects->projects;
-    }
-
-    public function getProjectDetails(){
-        $this->setJsonHeaders();
-        $url =  "projects/{$this->project_id}";
-        return self::json_decode($this->apiCall(self::GET, $url));
-    }
-
-    public function postProject($name){
-        $request = array(
-            'name' => $name
-        );
-
-        $this->setCommonHeaders();
-        $res = $this->apiCall(self::POST, 'projects', $request);
-        $responce = self::json_decode($res);
-        return $responce->id;
-    }
-
-    public function deleteProject(){
-        $url = "projects/{$this->project_id}";
-        return $this->apiCall(self::DELETE, $url);
     }
 
     public function getQueues($page = 0){
@@ -248,6 +245,13 @@ class IronMQ{
         return self::json_decode($this->apiCall(self::GET, $url, $params));
     }
 
+    /**
+     * Get information about queue.
+     * Also returns queue size.
+     *
+     * @param string $queue_name
+     * @return mixed
+     */
     public function getQueue($queue_name) {
         $url = "projects/{$this->project_id}/queues/{$queue_name}";
         $this->setJsonHeaders();
@@ -256,6 +260,19 @@ class IronMQ{
 
     /**
      * Push a message on the queue
+     *
+     * Examples:
+     * <code>
+     * $ironmq->postMessage("test_queue", "Hello world");
+     * </code>
+     * <code>
+     * $ironmq->postMessage("test_queue", array(
+     *   "body" => "Test Message"
+     *   "timeout" => 120,
+     *   'delay' => 2,
+     *   'expires_in' => 2*24*3600 # 2 days
+     * ));
+     * </code>
      *
      * @param string $queue_name Name of the queue.
      * @param array|string $message
@@ -272,6 +289,13 @@ class IronMQ{
         return self::json_decode($res);
     }
 
+    /**
+     * Push multiple messages on the queue
+     *
+     * @param string $queue_name Name of the queue.
+     * @param array $messages array of messages, each message same as for postMessage() method
+     * @return mixed
+     */
     public function postMessages($queue_name, $messages) {
         $req = array(
             "messages" => array()
@@ -309,14 +333,6 @@ class IronMQ{
     public function deleteMessage($queue_name, $message_id) {
         $this->setCommonHeaders();
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages/{$message_id}";
-        return $this->apiCall(self::DELETE, $url);
-    }
-
-    public function deleteTask($task_id){
-        $this->setCommonHeaders();
-        $this->headers['Accept'] = "text/plain";
-        unset($this->headers['Content-Type']);
-        $url = "projects/{$this->project_id}/tasks/$task_id";
         return $this->apiCall(self::DELETE, $url);
     }
 
