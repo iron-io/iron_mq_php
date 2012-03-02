@@ -5,7 +5,7 @@
  *
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
- * @link http://docs.iron.io/
+ * @link http://dev.iron.io/
  * @version 1.0
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
@@ -177,7 +177,7 @@ class IronMQ{
 
     private $required_config_fields = array('token','project_id');
     private $default_values = array(
-        'protocol'    => 'http',
+        'protocol'    => 'https',
         'host'        => 'mq-aws-us-east-1.iron.io',
         'port'        => '80',
         'api_version' => '1',
