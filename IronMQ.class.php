@@ -179,7 +179,7 @@ class IronMQ{
     private $default_values = array(
         'protocol'    => 'https',
         'host'        => 'mq-aws-us-east-1.iron.io',
-        'port'        => '80',
+        'port'        => '443',
         'api_version' => '1',
     );
 
