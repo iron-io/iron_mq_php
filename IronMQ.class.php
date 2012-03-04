@@ -22,6 +22,7 @@ class Http_Exception extends Exception{
     const CONFLICT = 409;
     const PRECONDITION_FAILED = 412;
     const INTERNAL_ERROR = 500;
+    const SERVICE_UNAVAILABLE = 503;
 }
 
 class IronMQ_Exception extends Exception{
@@ -397,19 +398,16 @@ class IronMQ{
                 case self::HTTP_ACEPTED:
                     curl_close($s);
                     return $_out;
-                case Http_Exception::BAD_REQUEST:
-                case Http_Exception::NOT_FOUND:
-                case Http_Exception::NOT_ALOWED:
-                case Http_Exception::CONFLICT:
-                case Http_Exception::PRECONDITION_FAILED:
-                    throw new Http_Exception("http error: {$status} | {$_out}", $status);
-                default:
+                case Http_Exception::SERVICE_UNAVAILABLE:
                     // wait for a random delay between 0 and (4^currentRetry * 100) milliseconds
                     $max_delay = pow(4, $retry)*100*1000;
                     usleep(rand(0, $max_delay));
+                    break;
+                default:
+                    throw new Http_Exception("http error: {$status} | {$_out}", $status);
             }
         }
-        throw new Http_Exception("http error: Max retries count is reached", 500);
+        throw new Http_Exception("http error: Service unavailable | ", 503);
     }
 
 
