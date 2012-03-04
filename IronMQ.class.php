@@ -173,7 +173,8 @@ class IronMQ{
     const GET    = 'GET';
     const DELETE = 'DELETE';
 
-    public  $debug_enabled = false;
+    public $debug_enabled = false;
+    public $max_retries = 5;
 
     private $required_config_fields = array('token','project_id');
     private $default_values = array(
@@ -381,19 +382,34 @@ class IronMQ{
 
         curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($s, CURLOPT_HTTPHEADER, $this->compiledHeaders());
-        $_out = curl_exec($s);
-        $status = curl_getinfo($s, CURLINFO_HTTP_CODE);
-        curl_close($s);
-        switch ($status) {
-            case self::HTTP_OK:
-            case self::HTTP_CREATED:
-            case self::HTTP_ACEPTED:
-                $out = $_out;
-                break;
-            default:
-                throw new Http_Exception("http error: {$status} | {$_out}", $status);
+
+        return $this->callWithRetries($s);
+    }
+
+
+    private function callWithRetries($s){
+        for ($retry = 0; $retry < $this->max_retries; $retry++){
+            $_out = curl_exec($s);
+            $status = curl_getinfo($s, CURLINFO_HTTP_CODE);
+            switch ($status) {
+                case self::HTTP_OK:
+                case self::HTTP_CREATED:
+                case self::HTTP_ACEPTED:
+                    curl_close($s);
+                    return $_out;
+                case Http_Exception::BAD_REQUEST:
+                case Http_Exception::NOT_FOUND:
+                case Http_Exception::NOT_ALOWED:
+                case Http_Exception::CONFLICT:
+                case Http_Exception::PRECONDITION_FAILED:
+                    throw new Http_Exception("http error: {$status} | {$_out}", $status);
+                default:
+                    // wait for a random delay between 0 and (4^currentRetry * 100) milliseconds
+                    $max_delay = pow(4, $retry)*100*1000;
+                    usleep(rand(0, $max_delay));
+            }
         }
-        return $out;
+        throw new Http_Exception("http error: Max retries count is reached", 500);
     }
 
 
