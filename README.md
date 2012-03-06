@@ -80,4 +80,4 @@ Delete a message from the queue when you're done with it.
 You can find more documentation here:
 
 * http://iron.io
-* http://docs.iron.io
+* http://dev.iron.io
