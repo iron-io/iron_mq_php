@@ -316,7 +316,7 @@ class IronMQ{
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $params = array();
         if($count > 1) {
-            $params['count'] = $count;
+            $params['n'] = $count;
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
