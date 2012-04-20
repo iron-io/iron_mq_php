@@ -48,6 +48,10 @@ class JSON_Exception extends Exception {
             case JSON_ERROR_SYNTAX:
                 $this->error = "Syntax error, malformed JSON";
                 break;
+            default:
+                $this->error = $error_code;
+                break;
+
         }
         parent::__construct();
     }
@@ -485,9 +489,13 @@ class IronMQ{
 
     private static function json_decode($response){
         $data = json_decode($response);
-        $json_error = json_last_error();
-        if($json_error != JSON_ERROR_NONE) {
-            throw new JSON_Exception($json_error);
+        if (function_exists('json_last_error')){
+            $json_error = json_last_error();
+            if($json_error != JSON_ERROR_NONE) {
+                throw new JSON_Exception($json_error);
+            }
+        }elseif($data === null){
+            throw new JSON_Exception("Common JSON error");
         }
         return $data;
     }
