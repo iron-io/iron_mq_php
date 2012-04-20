@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.0
+ * @version 1.0.1
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -312,6 +312,13 @@ class IronMQ{
         return self::json_decode($res);
     }
 
+    /**
+     * Get multiplie messages from queue
+     *
+     * @param string $queue_name Queue name
+     * @param int $count
+     * @return array|null array of messages or null
+     */
     public function getMessages($queue_name, $count=1) {
         $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
         $params = array();
@@ -324,12 +331,23 @@ class IronMQ{
         if(count($result->messages) < 1) {
             return null;
         } else {
-            return $result;
+            return $result->messages;
         }
     }
 
+    /**
+     * Get single message from queue
+     *
+     * @param string $queue_name Queue name
+     * @return mixed|null single message or null
+     */
     public function getMessage($queue_name) {
-        return $this->getMessages($queue_name, 1);
+        $messages = $this->getMessages($queue_name, 1);
+        if ($messages){
+            return $messages[0];
+        }else{
+            return null;
+        }
     }
 
     public function deleteMessage($queue_name, $message_id) {
