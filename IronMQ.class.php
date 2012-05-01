@@ -180,6 +180,7 @@ class IronMQ{
 
     public $debug_enabled = false;
     public $max_retries = 5;
+    public $ssl_verifypeer = true;
 
     private $required_config_fields = array('token','project_id');
     private $default_values = array(
@@ -403,6 +404,7 @@ class IronMQ{
                 break;
         }
 
+        curl_setopt($s, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
         curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($s, CURLOPT_HTTPHEADER, $this->compiledHeaders());
 
