@@ -14,14 +14,35 @@ To start using iron_mq_php, you need to sign up and get an oauth token.
 2. Get an Oauth Token at http://hud.iron.io/tokens
 
 ## Install iron_mq_php
-Just copy `IronMQ.class.php` and include it in your script:
+
+There are two ways to use iron_mq_php:
+
+#### Using precompiled phar archive:
+
+Copy `iron_mq.phar` to target directory and include it:
 
 ```php
 <?php
+require_once "phar://iron_mq.phar";
+```
+
+Please note, [phar](http://php.net/manual/en/book.phar.php) extension available by default only from php 5.3.0
+For php 5.2 you should install phar manually or use second option.
+
+#### Using classes directly
+
+1. Copy `IronMQ.class.php` to target directory
+2. Grab `IronCore.class.php` [there](https://github.com/iron-io/iron_core_php) and copy to target directory
+3. Include both of them:
+
+```php
+<?php
+require_once "IronCore.class.php"
 require_once "IronMQ.class.php"
 ```
+
 ## Configure
-Two ways to configure IronWorker:
+Three ways to configure IronMQ:
 
 * Passing array with options:
 
@@ -38,6 +59,16 @@ $ironmq = new IronMQ(array(
 <?php
 $ironmq = new IronMQ('config.ini');
 ```
+
+* Automatic config search - pass zero arguments to constructor and library will try to find config file in following locations:
+
+    * `iron.ini` in current directory
+    * `iron.json` in current directory
+    * `IRON_MQ_TOKEN`, `IRON_MQ_PROJECT_ID` and other environment variables
+    * `IRON_TOKEN`, `IRON_PROJECT_ID` and other environment variables
+    * `.iron.ini` in user's home directory
+    * `.iron.json` in user's home directory
+
 
 ## The Basics
 

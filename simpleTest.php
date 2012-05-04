@@ -1,9 +1,10 @@
 <?php
 
-include("IronMQ.class.php");
+include("phar://iron_mq.phar");
 
 $ironmq = new IronMQ('config.ini');
 $ironmq->debug_enabled = true;
+$ironmq->ssl_verifypeer = false;
 
 
 $res = $ironmq->postMessage("test_queue", array("body" => "Test Message"));

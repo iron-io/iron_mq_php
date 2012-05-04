@@ -6,59 +6,14 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.0.1
+ * @version 1.1.0
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
 
-/**
- * The Http_Exception class represents an HTTP response status that is not 200 OK.
- */
-class Http_Exception extends Exception{
-    const NOT_MODIFIED = 304;
-    const BAD_REQUEST = 400;
-    const NOT_FOUND = 404;
-    const NOT_ALOWED = 405;
-    const CONFLICT = 409;
-    const PRECONDITION_FAILED = 412;
-    const INTERNAL_ERROR = 500;
-    const SERVICE_UNAVAILABLE = 503;
-}
 
 class IronMQ_Exception extends Exception{
 
-}
-
-/**
- * The JSON_Exception class represents an failures of decoding json strings.
- */
-class JSON_Exception extends Exception {
-    public $error = null;
-    public $error_code = JSON_ERROR_NONE;
-
-    function __construct($error_code) {
-        $this->error_code = $error_code;
-        switch($error_code) {
-            case JSON_ERROR_DEPTH:
-                $this->error = 'Maximum stack depth exceeded.';
-                break;
-            case JSON_ERROR_CTRL_CHAR:
-                $this->error = "Unexpected control characted found.";
-                break;
-            case JSON_ERROR_SYNTAX:
-                $this->error = "Syntax error, malformed JSON";
-                break;
-            default:
-                $this->error = $error_code;
-                break;
-
-        }
-        parent::__construct();
-    }
-
-    function __toString() {
-        return $this->error;
-    }
 }
 
 
@@ -164,37 +119,17 @@ class IronMQ_Message {
     }
 }
 
-class IronMQ{
+class IronMQ extends IronCore{
 
-    //Header Constants
-    const header_user_agent = "IronMQ PHP v0.1";
-    const header_accept = "application/json";
-    const header_accept_encoding = "gzip, deflate";
-    const HTTP_OK = 200;
-    const HTTP_CREATED = 201;
-    const HTTP_ACEPTED = 202;
-
-    const POST   = 'POST';
-    const GET    = 'GET';
-    const DELETE = 'DELETE';
-
-    public $debug_enabled = false;
-    public $max_retries = 5;
-    public $ssl_verifypeer = true;
-
-    private $required_config_fields = array('token','project_id');
-    private $default_values = array(
+    protected $client_version = '1.0.1';
+    protected $client_name    = 'iron_mq_php';
+    protected $product_name   = 'iron_mq';
+    protected $default_values = array(
         'protocol'    => 'https',
         'host'        => 'mq-aws-us-east-1.iron.io',
         'port'        => '443',
         'api_version' => '1',
     );
-
-    private $url;
-    private $token;
-    private $api_version;
-    private $version;
-    private $project_id;
 
     /**
      * @param string|array $config_file_or_options
@@ -211,26 +146,14 @@ class IronMQ{
      * - api_version
      */
     function __construct($config_file_or_options){
-        $config = $this->getConfigData($config_file_or_options);
-        $token              = $config['token'];
-        $project_id         = $config['project_id'];
-
-        $protocol           = empty($config['protocol'])   ? $this->default_values['protocol']    : $config['protocol'];
-        $host               = empty($config['host'])       ? $this->default_values['host']        : $config['host'];
-        $port               = empty($config['port'])       ? $this->default_values['port']        : $config['port'];
-        $api_version        = empty($config['api_version'])? $this->default_values['api_version'] : $config['api_version'];
-
-        $this->url          = "$protocol://$host:$port/$api_version/";
-        $this->token        = $token;
-        $this->api_version  = $api_version;
-        $this->version      = $api_version;
-        $this->project_id   = $project_id;
+        $this->getConfigData($config_file_or_options);
+        $this->url = "{$this->protocol}://{$this->host}:{$this->port}/{$this->api_version}/";
     }
 
     /**
      * Switch active project
      *
-     * string @param $project_id Project ID
+     * @param string $project_id Project ID
      * @throws InvalidArgumentException
      */
     public function setProjectId($project_id) {
@@ -363,117 +286,6 @@ class IronMQ{
 
     /* PRIVATE FUNCTIONS */
 
-    private function compiledHeaders(){
-
-        # Set default headers if no headers set.
-        if ($this->headers == null){
-            $this->setCommonHeaders();
-        }
-
-        $headers = array();
-        foreach ($this->headers as $k => $v){
-            $headers[] = "$k: $v";
-        }
-        return $headers;
-    }
-
-    private function apiCall($type, $url, $params = array()){
-        $url = "{$this->url}$url";
-
-        $s = curl_init();
-        if (! isset($params['oauth'])) {
-          $params['oauth'] = $this->token;
-        }
-        switch ($type) {
-            case self::DELETE:
-                $fullUrl = $url . '?' . http_build_query($params);
-                $this->debug('apiCall fullUrl', $fullUrl);
-                curl_setopt($s, CURLOPT_URL, $fullUrl);
-                curl_setopt($s, CURLOPT_CUSTOMREQUEST, self::DELETE);
-                break;
-            case self::POST:
-                $this->debug('apiCall url', $url);
-                curl_setopt($s, CURLOPT_URL,  $url);
-                curl_setopt($s, CURLOPT_POST, true);
-                curl_setopt($s, CURLOPT_POSTFIELDS, json_encode($params));
-                break;
-            case self::GET:
-                $fullUrl = $url . '?' . http_build_query($params);
-                $this->debug('apiCall fullUrl', $fullUrl);
-                curl_setopt($s, CURLOPT_URL, $fullUrl);
-                break;
-        }
-
-        curl_setopt($s, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
-        curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($s, CURLOPT_HTTPHEADER, $this->compiledHeaders());
-
-        return $this->callWithRetries($s);
-    }
-
-
-    private function callWithRetries($s){
-        for ($retry = 0; $retry < $this->max_retries; $retry++){
-            $_out = curl_exec($s);
-            $status = curl_getinfo($s, CURLINFO_HTTP_CODE);
-            switch ($status) {
-                case self::HTTP_OK:
-                case self::HTTP_CREATED:
-                case self::HTTP_ACEPTED:
-                    curl_close($s);
-                    return $_out;
-                case Http_Exception::SERVICE_UNAVAILABLE:
-                    // wait for a random delay between 0 and (4^currentRetry * 100) milliseconds
-                    $max_delay = pow(4, $retry)*100*1000;
-                    usleep(rand(0, $max_delay));
-                    break;
-                default:
-                    throw new Http_Exception("http error: {$status} | {$_out}", $status);
-            }
-        }
-        throw new Http_Exception("http error: Service unavailable | ", 503);
-    }
-
-
-    /**
-     * @param array|string $config_file_or_options
-     * array of options or name of config file
-     * @return array
-     * @throws InvalidArgumentException
-     */
-    private function getConfigData($config_file_or_options){
-        if (is_string($config_file_or_options)){
-            $ini = parse_ini_file($config_file_or_options, true);
-            if ($ini === false){
-                throw new InvalidArgumentException("Config file $config_file_or_options not found");
-            }
-            if (empty($ini['iron_mq'])){
-                throw new InvalidArgumentException("Config file $config_file_or_options has no section 'iron_mq'");
-            }
-            $config =  $ini['iron_mq'];
-        }elseif(is_array($config_file_or_options)){
-            $config = $config_file_or_options;
-        }else{
-            throw new InvalidArgumentException("Wrong parameter type");
-        }
-        foreach ($this->required_config_fields as $field){
-            if (empty($config[$field])){
-                throw new InvalidArgumentException("Required config key missing: '$field'");
-            }
-        }
-        return $config;
-    }
-
-    private function setCommonHeaders(){
-        $this->headers = array(
-            'Authorization'   => "OAuth {$this->token}",
-            'User-Agent'      => self::header_user_agent,
-            'Content-Type'    => 'application/json',
-            'Accept'          => self::header_accept,
-            'Accept-Encoding' => self::header_accept_encoding
-        );
-    }
-
     private function setJsonHeaders(){
         $this->setCommonHeaders();
     }
@@ -481,25 +293,6 @@ class IronMQ{
     private function setPostHeaders(){
         $this->setCommonHeaders();
         $this->headers['Content-Type'] ='multipart/form-data';
-    }
-
-    private function debug($var_name, $variable){
-        if ($this->debug_enabled){
-            echo "{$var_name}: ".var_export($variable,true)."\n";
-        }
-    }
-
-    private static function json_decode($response){
-        $data = json_decode($response);
-        if (function_exists('json_last_error')){
-            $json_error = json_last_error();
-            if($json_error != JSON_ERROR_NONE) {
-                throw new JSON_Exception($json_error);
-            }
-        }elseif($data === null){
-            throw new JSON_Exception("Common JSON error");
-        }
-        return $data;
     }
 
 }
