@@ -26,7 +26,7 @@ $phar->addFile('LICENSE', 'LICENSE');
 echo "\ndone - ".(round(filesize('iron_mq.phar')/1024,2))." KB\n";
 
 # Verification
-include("phar://iron_mq.phar");
+require "phar://iron_mq.phar";
 $worker = new IronMQ('config.ini');
 
 echo "Build finished successfully\n";

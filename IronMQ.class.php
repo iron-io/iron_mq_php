@@ -121,7 +121,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore{
 
-    protected $client_version = '1.0.1';
+    protected $client_version = '1.1.0';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
