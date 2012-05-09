@@ -183,7 +183,7 @@ class IronMQ extends IronCore{
      * @return mixed
      */
     public function getQueue($queue_name) {
-        $queue = urlencode($queue_name);
+        $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
         $this->setJsonHeaders();
         return self::json_decode($this->apiCall(self::GET, $url));
@@ -215,7 +215,7 @@ class IronMQ extends IronCore{
             "messages" => array($msg->asArray())
         );
         $this->setCommonHeaders();
-        $queue = urlencode($queue_name);
+        $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $res = $this->apiCall(self::POST, $url, $req);
         return self::json_decode($res);
@@ -237,7 +237,7 @@ class IronMQ extends IronCore{
             array_push($req['messages'], $msg->asArray());
         }
         $this->setCommonHeaders();
-        $queue = urlencode($queue_name);
+        $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $res = $this->apiCall(self::POST, $url, $req);
         return self::json_decode($res);
@@ -251,7 +251,7 @@ class IronMQ extends IronCore{
      * @return array|null array of messages or null
      */
     public function getMessages($queue_name, $count=1) {
-        $queue = urlencode($queue_name);
+        $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $params = array();
         if($count > 1) {
@@ -284,7 +284,7 @@ class IronMQ extends IronCore{
 
     public function deleteMessage($queue_name, $message_id) {
         $this->setCommonHeaders();
-        $queue = urlencode($queue_name);
+        $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
         return $this->apiCall(self::DELETE, $url);
     }
