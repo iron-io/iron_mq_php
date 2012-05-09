@@ -183,7 +183,8 @@ class IronMQ extends IronCore{
      * @return mixed
      */
     public function getQueue($queue_name) {
-        $url = "projects/{$this->project_id}/queues/{$queue_name}";
+        $queue = urlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue";
         $this->setJsonHeaders();
         return self::json_decode($this->apiCall(self::GET, $url));
     }
@@ -214,7 +215,8 @@ class IronMQ extends IronCore{
             "messages" => array($msg->asArray())
         );
         $this->setCommonHeaders();
-        $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
+        $queue = urlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages";
         $res = $this->apiCall(self::POST, $url, $req);
         return self::json_decode($res);
     }
@@ -235,7 +237,8 @@ class IronMQ extends IronCore{
             array_push($req['messages'], $msg->asArray());
         }
         $this->setCommonHeaders();
-        $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
+        $queue = urlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages";
         $res = $this->apiCall(self::POST, $url, $req);
         return self::json_decode($res);
     }
@@ -248,7 +251,8 @@ class IronMQ extends IronCore{
      * @return array|null array of messages or null
      */
     public function getMessages($queue_name, $count=1) {
-        $url = "projects/{$this->project_id}/queues/{$queue_name}/messages";
+        $queue = urlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages";
         $params = array();
         if($count > 1) {
             $params['n'] = $count;
@@ -280,7 +284,8 @@ class IronMQ extends IronCore{
 
     public function deleteMessage($queue_name, $message_id) {
         $this->setCommonHeaders();
-        $url = "projects/{$this->project_id}/queues/{$queue_name}/messages/{$message_id}";
+        $queue = urlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
         return $this->apiCall(self::DELETE, $url);
     }
 
