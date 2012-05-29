@@ -106,6 +106,18 @@ $ironmq->deleteMessage("test_queue", $message_id);
 Delete a message from the queue when you're done with it.
 
 
+# Troubleshooting
+
+### http error: 0
+
+If you see  `Uncaught exception 'Http_Exception' with message 'http error: 0 | '`
+it most likely caused by misconfigured cURL https sertificates.
+There are two ways to fix this error:
+
+  1) Disable SSL sertificate verification - add this line after $ironmq initialization: `$ironmq->ssl_verifypeer = false;`
+  2) Switch to http protocol - add this to configuration options: `protocol = http` and `port = 80`
+
+
 # Full Documentation
 
 You can find more documentation here:
