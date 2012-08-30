@@ -145,7 +145,7 @@ class IronMQ extends IronCore{
      * - port
      * - api_version
      */
-    function __construct($config_file_or_options){
+    function __construct($config_file_or_options = null){
         $this->getConfigData($config_file_or_options);
         $this->url = "{$this->protocol}://{$this->host}:{$this->port}/{$this->api_version}/";
     }
