@@ -190,6 +190,19 @@ class IronMQ extends IronCore{
     }
 
     /**
+     * Clear all messages from queue.
+     *
+     * @param string $queue_name
+     * @return mixed
+     */
+    public function clearQueue($queue_name) {
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/clear";
+        $this->setJsonHeaders();
+        return self::json_decode($this->apiCall(self::POST, $url));
+    }
+
+    /**
      * Push a message on the queue
      *
      * Examples:
