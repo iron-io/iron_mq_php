@@ -131,6 +131,9 @@ class IronMQ extends IronCore{
         'api_version' => '1',
     );
 
+    const LIST_QUEUES_PER_PAGE = 30;
+    const GET_MESSAGE_TIMEOUT = 60;
+
     /**
      * @param string|array $config_file_or_options
      *        Array of options or name of config file.
@@ -165,11 +168,22 @@ class IronMQ extends IronCore{
         }
     }
 
-    public function getQueues($page = 0){
+    /**
+     * Get list of message queues
+     *
+     * @param int $page
+     *        Zero-indexed page to view
+     * @param int $per_page
+     *        Number of queues per page
+     */
+    public function getQueues($page = 0, $per_page = self::LIST_QUEUES_PER_PAGE) {
         $url = "projects/{$this->project_id}/queues";
         $params = array();
-        if($page > 0) {
-            $params['page'] = $page;
+        if($page !== 0) {
+            $params['page'] = (int) $page;
+        }
+        if($per_page !== self::LIST_QUEUES_PER_PAGE) {
+            $params['per_page'] = (int) $per_page;
         }
         $this->setJsonHeaders();
         return self::json_decode($this->apiCall(self::GET, $url, $params));
@@ -261,14 +275,18 @@ class IronMQ extends IronCore{
      *
      * @param string $queue_name Queue name
      * @param int $count
+     * @param int $timeout
      * @return array|null array of messages or null
      */
-    public function getMessages($queue_name, $count=1) {
+    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT) {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $params = array();
-        if($count > 1) {
-            $params['n'] = $count;
+        if($count !== 1) {
+            $params['n'] = (int) $count;
+        }
+        if($timeout !== self::GET_MESSAGE_TIMEOUT) {
+            $params['timeout'] = (int) $timeout;
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
@@ -284,10 +302,11 @@ class IronMQ extends IronCore{
      * Get single message from queue
      *
      * @param string $queue_name Queue name
+     * @param int $timeout
      * @return mixed|null single message or null
      */
-    public function getMessage($queue_name) {
-        $messages = $this->getMessages($queue_name, 1);
+    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT) {
+        $messages = $this->getMessages($queue_name, 1, $timeout);
         if ($messages){
             return $messages[0];
         }else{
