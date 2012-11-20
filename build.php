@@ -6,7 +6,7 @@
  * or
  * include("phar://".dirname(__FILE__)."/iron_mq.phar");
  */
- 
+
 @unlink('iron_mq.phar');
 
 $phar = new Phar('iron_mq.phar');
@@ -29,6 +29,6 @@ echo "\ndone - ".(round(filesize('iron_mq.phar')/1024,2))." KB\n";
 
 # Verification
 require "phar://iron_mq.phar";
-$worker = new IronMQ('config.ini');
+$worker = new IronMQ();
 
 echo "Build finished successfully\n";

@@ -1,16 +1,32 @@
 <?php
 
-include("phar://iron_mq.phar");
+#require("phar://iron_mq.phar");
+require("../iron_core_php/IronCore.class.php");
+require("IronMQ.class.php");
 
-$ironmq = new IronMQ('config.ini');
-$ironmq->debug_enabled = true;
+$ironmq = new IronMQ();
+#$ironmq->debug_enabled = true;
 $ironmq->ssl_verifypeer = false;
 
+for ($i = 0; $i < 10; $i++){
+    echo "Post message..\n";
+    $res = $ironmq->postMessage("test_queue", array("body" => "Test Message $i"));
+    print_r($res);
 
-$res = $ironmq->postMessage("test_queue", array("body" => "Test Message"));
+    echo "Get message..\n";
+    $message = $ironmq->getMessage("test_queue");
+    print_r($message);
 
-print_r($res);
-sleep(2);
-print "Getting message..";
-$message = $ironmq->getMessage("test_queue");
-print_r($message);
+    echo "Delete message..\n";
+    $message = $ironmq->deleteMessage("test_queue", $message->id);
+    print_r($message);
+
+    $message = $ironmq->getMessage("test_queue");
+    print_r($message);
+
+
+    echo "\n------$i-------\n";
+}
+
+
+echo "\n done";
