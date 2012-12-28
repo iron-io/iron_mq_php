@@ -83,11 +83,19 @@ More complex example:
 
 ```php
 <?php
-$ironmq->postMessage("test_queue", array(
-    "body" => "Test Message",
-    "timeout" => 120, # Timeout, in seconds. After timeout, item will be placed back on queue. Defaults to 60.
+$ironmq->postMessage("test_queue", "Test Message", array(
+    'timeout' => 120, # Timeout, in seconds. After timeout, item will be placed back on queue. Defaults to 60.
     'delay' => 5, # The item will not be available on the queue until this many seconds have passed. Defaults to 0.
     'expires_in' => 2*24*3600 # How long, in seconds, to keep the item on the queue before it is deleted.
+));
+```
+
+Post multiple messages in one API call:
+
+```php
+<?php
+$ironmq->postMessages("test_queue", array("Message 1", "Message 2"), array(
+    'timeout' => 120
 ));
 ```
 
@@ -116,6 +124,11 @@ There are two ways to fix this error:
 
 1. Disable SSL sertificate verification - add this line after IronMQ initialization: `$ironmq->ssl_verifypeer = false;`
 2. Switch to http protocol - add this to configuration options: `protocol = http` and `port = 80`
+
+# Updating notes
+
+* In version 1.3.0 changed argument list in methods `postMessage` and `postMessages`. Please revise code that uses these methods.
+
 
 
 # Full Documentation

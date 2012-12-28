@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.2.0
+ * @version 1.3.0
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -117,7 +117,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore {
 
-    protected $client_version = '1.2.0';
+    protected $client_version = '1.3.0';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
@@ -221,7 +221,7 @@ class IronMQ extends IronCore {
      * </code>
      * <code>
      * $ironmq->postMessage("test_queue", "Test Message", array(
-     *   "timeout" => 120,
+     *   'timeout' => 120,
      *   'delay' => 2,
      *   'expires_in' => 2*24*3600 # 2 days
      * ));
@@ -250,7 +250,7 @@ class IronMQ extends IronCore {
      * Example:
      * <code>
      * $ironmq->postMessages("test_queue", array("Lorem", "Ipsum"), array(
-     *   "timeout" => 120,
+     *   'timeout' => 120,
      *   'delay' => 2,
      *   'expires_in' => 2*24*3600 # 2 days
      * ));
