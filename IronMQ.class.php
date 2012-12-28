@@ -28,30 +28,26 @@ class IronMQ_Message {
     /**
      * Create a new message.
      *
-     * @param array|string $message
-     *        An array of message properties or a string of the message body.
-     * Fields in message array:
-     * Required:
-     * - body: The message data, as a string.
-     * Optional:
+     * @param string $message
+     *        A message body
+     * @param array $properties
+     *        An array of message properties
+     * Fields in $properties array:
      * - timeout: Timeout, in seconds. After timeout, item will be placed back on queue. Defaults to 60.
      * - delay: The item will not be available on the queue until this many seconds have passed. Defaults to 0.
      * - expires_in: How long, in seconds, to keep the item on the queue before it is deleted. Defaults to 604800 (7 days). Maximum is 2592000 (30 days).
      */
-    function __construct($message) {
-        if(is_string($message)) {
-            $this->setBody($message);
-        } elseif(is_array($message)) {
-            $this->setBody($message['body']);
-            if(array_key_exists("timeout", $message)) {
-                $this->setTimeout($message['timeout']);
-            }
-            if(array_key_exists("delay", $message)) {
-                $this->setDelay($message['delay']);
-            }
-            if(array_key_exists("expires_in", $message)) {
-                $this->setExpiresIn($message['expires_in']);
-            }
+    function __construct($message, $properties = array()) {
+        $this->setBody($message);
+
+        if(array_key_exists("timeout", $properties)) {
+            $this->setTimeout($properties['timeout']);
+        }
+        if(array_key_exists("delay", $properties)) {
+            $this->setDelay($properties['delay']);
+        }
+        if(array_key_exists("expires_in", $properties)) {
+            $this->setExpiresIn($properties['expires_in']);
         }
     }
 
@@ -63,7 +59,7 @@ class IronMQ_Message {
         if(empty($body)) {
             throw new InvalidArgumentException("Please specify a body");
         } else {
-            $this->body = $body;
+            $this->body = (string) $body;
         }
     }
 
@@ -224,8 +220,7 @@ class IronMQ extends IronCore {
      * $ironmq->postMessage("test_queue", "Hello world");
      * </code>
      * <code>
-     * $ironmq->postMessage("test_queue", array(
-     *   "body" => "Test Message"
+     * $ironmq->postMessage("test_queue", "Test Message", array(
      *   "timeout" => 120,
      *   'delay' => 2,
      *   'expires_in' => 2*24*3600 # 2 days
@@ -233,11 +228,12 @@ class IronMQ extends IronCore {
      * </code>
      *
      * @param string $queue_name Name of the queue.
-     * @param array|string $message
+     * @param string $message
+     * @param array $properties
      * @return mixed
      */
-    public function postMessage($queue_name, $message) {
-        $msg = new IronMQ_Message($message);
+    public function postMessage($queue_name, $message, $properties = array()) {
+        $msg = new IronMQ_Message($message, $properties);
         $req = array(
             "messages" => array($msg->asArray())
         );
@@ -251,16 +247,26 @@ class IronMQ extends IronCore {
     /**
      * Push multiple messages on the queue
      *
+     * Example:
+     * <code>
+     * $ironmq->postMessages("test_queue", array("Lorem", "Ipsum"), array(
+     *   "timeout" => 120,
+     *   'delay' => 2,
+     *   'expires_in' => 2*24*3600 # 2 days
+     * ));
+     * </code>
+     *
      * @param string $queue_name Name of the queue.
      * @param array $messages array of messages, each message same as for postMessage() method
+     * @param array $properties array of message properties, applied to each message in $messages
      * @return mixed
      */
-    public function postMessages($queue_name, $messages) {
+    public function postMessages($queue_name, $messages, $properties = array()) {
         $req = array(
             "messages" => array()
         );
         foreach($messages as $message) {
-            $msg = new IronMQ_Message($message);
+            $msg = new IronMQ_Message($message, $properties);
             array_push($req['messages'], $msg->asArray());
         }
         $this->setCommonHeaders();
