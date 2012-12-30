@@ -9,9 +9,13 @@ $ironmq = new IronMQ();
 $ironmq->ssl_verifypeer = false;
 
 for ($i = 0; $i < 10; $i++){
-    echo "Post message..\n";
+    echo "Post message:\n";
     $res = $ironmq->postMessage("test_queue", "Test Message $i");
-    print_r($res);
+    var_dump($res);
+
+    echo "Post messages:\n";
+    $res = $ironmq->postMessages("test-queue-multi", array("Test Message $i", "Test Message $i-2"));
+    var_dump($res);
 
     echo "Get message..\n";
     $message = $ironmq->getMessage("test_queue");

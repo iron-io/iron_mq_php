@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.3.0
+ * @version 1.3.1
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -117,7 +117,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore {
 
-    protected $client_version = '1.3.0';
+    protected $client_version = '1.3.1';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
@@ -230,7 +230,7 @@ class IronMQ extends IronCore {
      * @param string $queue_name Name of the queue.
      * @param string $message
      * @param array $properties
-     * @return mixed
+     * @return string id
      */
     public function postMessage($queue_name, $message, $properties = array()) {
         $msg = new IronMQ_Message($message, $properties);
@@ -241,7 +241,8 @@ class IronMQ extends IronCore {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $res = $this->apiCall(self::POST, $url, $req);
-        return self::json_decode($res);
+        $decoded = self::json_decode($res);
+        return $decoded->ids[0];
     }
 
     /**
@@ -259,7 +260,7 @@ class IronMQ extends IronCore {
      * @param string $queue_name Name of the queue.
      * @param array $messages array of messages, each message same as for postMessage() method
      * @param array $properties array of message properties, applied to each message in $messages
-     * @return mixed
+     * @return array $ids
      */
     public function postMessages($queue_name, $messages, $properties = array()) {
         $req = array(
@@ -273,7 +274,8 @@ class IronMQ extends IronCore {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $res = $this->apiCall(self::POST, $url, $req);
-        return self::json_decode($res);
+        $decoded = self::json_decode($res);
+        return $decoded->ids;
     }
 
     /**
