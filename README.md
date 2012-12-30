@@ -127,7 +127,8 @@ There are two ways to fix this error:
 
 # Updating notes
 
-* In version 1.3.0 changed argument list in methods `postMessage` and `postMessages`. Please revise code that uses these methods.
+* 1.3.0 - changed argument list in methods `postMessage` and `postMessages`. Please revise code that uses these methods.
+* 1.3.1 - changed return format in methods `postMessage` and `postMessages`. Now methods returning message id/array of ids
 
 
 
