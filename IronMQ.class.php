@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.3.2
+ * @version 1.4.0
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -117,7 +117,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore {
 
-    protected $client_version = '1.3.2';
+    protected $client_version = '1.4.0';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
@@ -322,12 +322,87 @@ class IronMQ extends IronCore {
         }
     }
 
+    /**
+     * Delete a Message from a Queue
+     * This call will delete the message. Be sure you call this after you’re done with a message or it will be placed back on the queue.
+     *
+     * @param $queue_name
+     * @param $message_id
+     * @return mixed
+     */
     public function deleteMessage($queue_name, $message_id) {
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
         return $this->apiCall(self::DELETE, $url);
     }
+
+    /**
+     * Peek Messages on a Queue
+     * Peeking at a queue returns the next messages on the queue, but it does not reserve them.
+     *
+     * @param string $queue_name
+     * @return object|null  message or null if queue is empty
+     */
+    public function peekMessage($queue_name) {
+        $messages = $this->peekMessages($queue_name, 1);
+        if ($messages == null) {
+            return null;
+        } else {
+            return $messages[0];
+        }
+    }
+
+    /**
+     * Peek Messages on a Queue
+     * Peeking at a queue returns the next messages on the queue, but it does not reserve them.
+     *
+     * @param string $queue_name
+     * @param int $count The maximum number of messages to peek. Maximum is 100.
+     * @return array|null array of messages or null if queue is empty
+     */
+    public function peekMessages($queue_name, $count) {
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages/peek";
+        $params = array();
+        if($count !== 1) {
+            $params['n'] = (int) $count;
+        }
+        $this->setJsonHeaders();
+        $response = self::json_decode($this->apiCall(self::GET, $url, $params));
+        return $response->messages;
+    }
+
+    /**
+     * Touch a Message on a Queue
+     * Touching a reserved message extends its timeout by the duration specified when the message was created, which is 60 seconds by default.
+     *
+     * @param $queue_name
+     * @param $message_id
+     * @return mixed
+     */
+    public function touchMessage($queue_name, $message_id) {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/touch";
+        return self::json_decode($this->apiCall(self::POST, $url));
+    }
+
+    /**
+     * Release a Message on a Queue
+     * Releasing a reserved message unreserves the message and puts it back on the queue as if the message had timed out.
+     *
+     * @param $queue_name
+     * @param $message_id
+     * @return mixed
+     */
+    public function releaseMessage($queue_name, $message_id) {
+       $this->setJsonHeaders();
+       $queue = rawurlencode($queue_name);
+       $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/release";
+       return self::json_decode($this->apiCall(self::POST, $url));
+    }
+
 
     /* PRIVATE FUNCTIONS */
 

@@ -21,6 +21,18 @@ for ($i = 0; $i < 10; $i++){
     $message = $ironmq->getMessage("test_queue");
     print_r($message);
 
+    echo "Touch message..\n";
+    $res = $ironmq->touchMessage("test_queue", $message->id);
+    print_r($res);
+
+    echo "Release message..\n";
+    $res = $ironmq->releaseMessage("test_queue", $message->id);
+    print_r($res);
+
+    echo "Peek message..\n";
+    $res = $ironmq->peekMessage("test_queue");
+    print_r($res);
+
     echo "Delete message..\n";
     $message = $ironmq->deleteMessage("test_queue", $message->id);
     print_r($message);
