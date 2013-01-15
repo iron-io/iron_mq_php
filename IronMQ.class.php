@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.4.0
+ * @version 1.4.1
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -117,7 +117,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore {
 
-    protected $client_version = '1.4.0';
+    protected $client_version = '1.4.1';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
@@ -377,8 +377,8 @@ class IronMQ extends IronCore {
      * Touch a Message on a Queue
      * Touching a reserved message extends its timeout by the duration specified when the message was created, which is 60 seconds by default.
      *
-     * @param $queue_name
-     * @param $message_id
+     * @param string $queue_name
+     * @param string $message_id
      * @return mixed
      */
     public function touchMessage($queue_name, $message_id) {
@@ -392,8 +392,8 @@ class IronMQ extends IronCore {
      * Release a Message on a Queue
      * Releasing a reserved message unreserves the message and puts it back on the queue as if the message had timed out.
      *
-     * @param $queue_name
-     * @param $message_id
+     * @param string $queue_name
+     * @param string $message_id
      * @return mixed
      */
     public function releaseMessage($queue_name, $message_id) {
@@ -401,6 +401,69 @@ class IronMQ extends IronCore {
        $queue = rawurlencode($queue_name);
        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/release";
        return self::json_decode($this->apiCall(self::POST, $url));
+    }
+
+    /**
+     * Updates the queue object
+     *
+     * @param string $queue_name
+     * @param array $options Parameters to change. keys:
+     * - "subscribers" url's to subscribe to
+     * - "push_type" multicast (default) or unicast.
+     * - "retries" Number of retries. 3 by default
+     * - "retries_delay" Delay between retries. 60 (seconds) by default
+     */
+    public function updateQueue($queue_name, $options) {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue";
+        return self::json_decode($this->apiCall(self::POST, $url, $options));
+    }
+
+    /**
+     * Add Subscriber to a Queue
+     *
+     * Example:
+     * <code>
+     * $ironmq->addSubscriber("test_queue", array("url" => "http://example.com"));
+     * </code>
+     *
+     * @param string $queue_name
+     * @param array $subscriber_hash Subscriber. keys:
+     * - "url" Subscriber url
+     * @return mixed
+     */
+    public function addSubscriber($queue_name, $subscriber_hash) {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/subscribers";
+        $options = array(
+            'subscribers' => array($subscriber_hash)
+        );
+        return self::json_decode($this->apiCall(self::POST, $url, $options));
+    }
+
+    /**
+     * Remove Subscriber from a Queue
+     *
+     * Example:
+     * <code>
+     * $ironmq->removeSubscriber("test_queue", array("url" => "http://example.com"));
+     * </code>
+     *
+     * @param string $queue_name
+     * @param array $subscriber_hash Subscriber. keys:
+     * - "url" Subscriber url
+     * @return mixed
+     */
+    public function removeSubscriber($queue_name, $subscriber_hash) {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/subscribers";
+        $options = array(
+            'subscribers' => array($subscriber_hash)
+        );
+        return self::json_decode($this->apiCall(self::DELETE, $url, $options));
     }
 
 
