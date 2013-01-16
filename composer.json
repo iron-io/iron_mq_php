@@ -14,10 +14,11 @@
         }
     ],
     "require": {
-        "php": ">=5.2.0"
+        "php": ">=5.2.0",
+        "iron-io/iron_core": "*"
     },
     "autoload": {
-        "files": ["iron_mq.phar"]
+        "files": ["IronMQ.class.php"]
     },
     "repositories":[
         {
