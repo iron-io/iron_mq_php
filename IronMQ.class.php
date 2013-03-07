@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.4.2
+ * @version 1.4.3
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -117,7 +117,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore {
 
-    protected $client_version = '1.4.2';
+    protected $client_version = '1.4.3';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
@@ -397,10 +397,24 @@ class IronMQ extends IronCore {
      * @return mixed
      */
     public function releaseMessage($queue_name, $message_id) {
-       $this->setJsonHeaders();
-       $queue = rawurlencode($queue_name);
-       $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/release";
-       return self::json_decode($this->apiCall(self::POST, $url));
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/release";
+        return self::json_decode($this->apiCall(self::POST, $url));
+    }
+
+    /**
+     * Delete a Message Queue
+     * This call deletes a message queue and all its messages.
+     *
+     * @param string $queue_name
+     * @return mixed
+     */
+    public function deleteQueue($queue_name) {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue";
+        return self::json_decode($this->apiCall(self::DELETE, $url));
     }
 
     /**

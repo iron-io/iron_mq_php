@@ -47,3 +47,8 @@ foreach ($subscribers as $subscriber){
 $res = $ironmq->getQueue($queue_name);
 echo "Queue info:\n";
 print_r($res);
+
+$res = $ironmq->deleteQueue($queue_name);
+echo "Queue deleted:\n";
+print_r($res);
+
