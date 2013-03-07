@@ -52,3 +52,4 @@ $res = $ironmq->deleteQueue($queue_name);
 echo "Queue deleted:\n";
 print_r($res);
 
+echo "\n done";
