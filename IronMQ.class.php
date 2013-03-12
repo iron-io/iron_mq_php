@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.4.3
+ * @version 1.4.4
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -117,7 +117,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore {
 
-    protected $client_version = '1.4.3';
+    protected $client_version = '1.4.4';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
@@ -394,13 +394,18 @@ class IronMQ extends IronCore {
      *
      * @param string $queue_name
      * @param string $message_id
+     * @param int $delay The item will not be available on the queue until this many seconds have passed. Default is 0 seconds. Maximum is 604,800 seconds (7 days).
      * @return mixed
      */
-    public function releaseMessage($queue_name, $message_id) {
+    public function releaseMessage($queue_name, $message_id, $delay = 0) {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
+        $params = array();
+        if ($delay !== 0) {
+            $params['delay'] = (int) $delay;
+        }
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/release";
-        return self::json_decode($this->apiCall(self::POST, $url));
+        return self::json_decode($this->apiCall(self::POST, $url, $params));
     }
 
     /**
