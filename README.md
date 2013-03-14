@@ -62,7 +62,8 @@ $ironmq = new IronMQ(array(
 $ironmq = new IronMQ('config.ini');
 ```
 
-* Automatic config search - pass zero arguments to constructor and library will try to find config file in following locations:
+* Automatic [config](http://dev.iron.io/mq/reference/configuration/) search -
+pass zero arguments to constructor and library will try to find config file in following locations:
 
     * `iron.ini` in current directory
     * `iron.json` in current directory
@@ -85,7 +86,7 @@ More complex example:
 
 ```php
 <?php
-$ironmq->postMessage("test_queue", "Test Message", array(
+$ironmq->postMessage($queue_name, "Test Message", array(
     "timeout" => 120, # Timeout, in seconds. After timeout, item will be placed back on queue. Defaults to 60.
     "delay" => 5, # The item will not be available on the queue until this many seconds have passed. Defaults to 0.
     "expires_in" => 2*24*3600 # How long, in seconds, to keep the item on the queue before it is deleted.
@@ -188,7 +189,7 @@ $response = $ironmq->deleteQueue($queue_name);
 
 ```php
 <?php
-$ironmq->postMessage("test_queue", "Test Message", array(
+$ironmq->postMessage($queue_name, "Test Message", array(
     'timeout' => 120,
     'delay' => 2,
     'expires_in' => 2*24*3600 # 2 days
@@ -199,7 +200,7 @@ $ironmq->postMessage("test_queue", "Test Message", array(
 
 ```php
 <?php
-$ironmq->postMessages("test_queue", array("Lorem", "Ipsum"), array(
+$ironmq->postMessages($queue_name, array("Lorem", "Ipsum"), array(
     "timeout" => 120,
     "delay" => 2,
     "expires_in" => 2*24*3600 # 2 days
@@ -284,8 +285,9 @@ $message = $ironmq->peekMessage($queue_name);
 
 **Multiple messages:**
 
+```php
 <?php
-$messages = $ironmq->peekMessage($queue_name, $count);
+$messages = $ironmq->peekMessages($queue_name, $count);
 ```
 
 ### Clear a Queue
@@ -304,6 +306,7 @@ IronMQ push queues allow you to setup a queue that will push to an endpoint, rat
 ### Update a Message Queue
 
 ```php
+<?php
 $params = array(
     "push_type" => "multicast",
     "retries" => 5,
@@ -352,9 +355,6 @@ $statuses = $ironmq->getMessagePushStatuses($queue_name, $message_id);
 ```
 
 Returns an array of subscribers with status.
-
-**Note:** getting a message by ID is only for usable for Push Queues.
-This creates fake `IronMQ::Message` instance on which you call for subscribers' push statuses.
 
 ### Acknowledge / Delete Message Push Status
 
