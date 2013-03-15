@@ -6,20 +6,22 @@ IronMQ PHP Client Library
 The [full API documentation is here](http://dev.iron.io/mq/reference/api/) and this client tries to stick to the API as
 much as possible so if you see an option in the API docs, you can use it in the methods below.
 
-# Getting Started
+## Getting Started
 
-## Get credentials
+### Get credentials
 
 To start using iron_mq_php, you need to sign up and get an oauth token.
 
 1. Go to http://iron.io/ and sign up.
 2. Get an Oauth Token at http://hud.iron.io/tokens
 
-## Install iron_mq_php
+--
+
+### Install iron_mq_php
 
 There are two ways to use iron_mq_php:
 
-#### Using precompiled phar archive:
+##### Using precompiled phar archive
 
 Copy `iron_mq.phar` to target directory and include it:
 
@@ -31,7 +33,7 @@ require_once "phar://iron_mq.phar";
 Please note, [phar](http://php.net/manual/en/book.phar.php) extension available by default only from php 5.3.0
 For php 5.2 you should install phar manually or use second option.
 
-#### Using classes directly
+##### Using classes directly
 
 1. Copy `IronMQ.class.php` to target directory
 2. Grab `IronCore.class.php` [there](https://github.com/iron-io/iron_core_php) and copy to target directory
@@ -43,7 +45,10 @@ require_once "IronCore.class.php"
 require_once "IronMQ.class.php"
 ```
 
-## Configure
+--
+
+### Configure
+
 Three ways to configure IronMQ:
 
 * Passing array with options:
@@ -72,8 +77,10 @@ pass zero arguments to constructor and library will try to find config file in f
     * `.iron.ini` in user's home directory
     * `.iron.json` in user's home directory
 
+--
 
-# The Basics
+
+## The Basics
 
 ### Post a Message to the Queue
 
@@ -102,6 +109,8 @@ $ironmq->postMessages($queue_name, array("Message 1", "Message 2"), array(
 ));
 ```
 
+--
+
 ### Get a Message off the Queue
 
 ```php
@@ -112,6 +121,8 @@ $ironmq->getMessage($queue_name);
 When you pop/get a message from the queue, it will NOT be deleted.
 It will eventually go back onto the queue after a timeout if you don't delete it (default timeout is 60 seconds).
 
+--
+
 ### Delete a Message from the Queue
 
 ```php
@@ -120,8 +131,10 @@ $ironmq->deleteMessage($queue_name, $message_id);
 ```
 Delete a message from the queue when you're done with it.
 
+--
 
-# Troubleshooting
+
+## Troubleshooting
 
 ### http error: 0
 
@@ -132,13 +145,17 @@ There are two ways to fix this error:
 1. Disable SSL sertificate verification - add this line after IronMQ initialization: `$ironmq->ssl_verifypeer = false;`
 2. Switch to http protocol - add this to configuration options: `protocol = http` and `port = 80`
 
+--
+
 ### Updating notes
 
 * 1.3.0 - changed argument list in methods `postMessage` and `postMessages`. Please revise code that uses these methods.
 * 1.4.5 - added `getMessagePushStatuses` and `deleteMessagePushStatus` methods.
 
+--
 
-# Queues
+
+## Queues
 
 ### IronMQ Client
 
@@ -151,6 +168,8 @@ $ironmq = new IronMQ(array(
     "project_id" => 'XXXXXXXXX'
 ));
 ```
+
+--
 
 ### List Queues
 
@@ -169,6 +188,8 @@ $queues = $ironmq->getQueues($page, $per_page);
 $queues_page_four = $ironmq->getQueues(3, 20); // get 4th page, 20 queues per page
 ```
 
+--
+
 ### Retrieve Queue Information
 
 ```php
@@ -176,12 +197,16 @@ $queues_page_four = $ironmq->getQueues(3, 20); // get 4th page, 20 queues per pa
 $qinfo = $ironmq->getQueue($queue_name);
 ```
 
+--
+
 ### Delete a Message Queue
 
 ```php
 <?php
 $response = $ironmq->deleteQueue($queue_name);
 ```
+
+--
 
 ### Post Messages to a Queue
 
@@ -219,6 +244,8 @@ Default is 0 seconds. Maximum is 604,800 seconds (7 days).
 * `expires_in`: How long in seconds to keep the item on the queue before it is deleted.
 Default is 604,800 seconds (7 days). Maximum is 2,592,000 seconds (30 days).
 
+--
+
 ### Get Messages from a Queue
 
 **Single message:**
@@ -244,6 +271,8 @@ You must delete the message from the queue to ensure it does not go back onto th
 If not set, value from POST is used. Default is 60 seconds. Minimum is 30 seconds.
 Maximum is 86,400 seconds (24 hours).
 
+--
+
 ### Touch a Message on a Queue
 
 Touching a reserved message extends its timeout by the duration specified when the message was created, which is 60 seconds by default.
@@ -252,6 +281,8 @@ Touching a reserved message extends its timeout by the duration specified when t
 <?php
 $ironmq->touchMessage($queue_name, $message_id);
 ```
+
+--
 
 ### Release Message
 
@@ -265,12 +296,16 @@ $ironmq->releaseMessage($queue_name, $message_id, $delay);
 * `$delay`: The item will not be available on the queue until this many seconds have passed.
 Default is 0 seconds. Maximum is 604,800 seconds (7 days).
 
+--
+
 ### Delete a Message from a Queue
 
 ```php
 <?php
 $ironmq->deleteMessage($queue_name, $message_id);
 ```
+
+--
 
 ### Peek Messages from a Queue
 
@@ -290,6 +325,8 @@ $message = $ironmq->peekMessage($queue_name);
 $messages = $ironmq->peekMessages($queue_name, $count);
 ```
 
+--
+
 ### Clear a Queue
 
 ```php
@@ -297,8 +334,10 @@ $messages = $ironmq->peekMessages($queue_name, $count);
 $ironmq->clearQueue($queue_name);
 ```
 
+--
 
-# Push Queues
+
+## Push Queues
 
 IronMQ push queues allow you to setup a queue that will push to an endpoint, rather than having to poll the endpoint. 
 [Here's the announcement for an overview](http://blog.iron.io/2013/01/ironmq-push-queues-reliable-message.html). 
@@ -329,6 +368,8 @@ See below for example json.
 * `retries`: How many times to retry on failure. Default is 3.
 * `retries_delay`: Delay between each retry in seconds. Default is 60.
 
+--
+
 ### Add/Remove Subscribers on a Queue
 
 Add subscriber to Push Queue:
@@ -344,6 +385,8 @@ $ironmq->removeSubscriber($queue_name, array(
 ));
 ```
 
+--
+
 ### Get Message Push Status
 
 ```php
@@ -356,6 +399,8 @@ $statuses = $ironmq->getMessagePushStatuses($queue_name, $message_id);
 
 Returns an array of subscribers with status.
 
+--
+
 ### Acknowledge / Delete Message Push Status
 
 ```php
@@ -367,8 +412,10 @@ foreach ($statuses as $status) {
 }
 ```
 
+--
 
-# Further Links
+
+## Further Links
 
 * [IronMQ Overview](http://dev.iron.io/mq/)
 * [IronMQ REST/HTTP API](http://dev.iron.io/mq/reference/api/)
