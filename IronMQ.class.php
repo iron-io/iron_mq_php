@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.4.4
+ * @version 1.4.5
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -117,7 +117,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore {
 
-    protected $client_version = '1.4.4';
+    protected $client_version = '1.4.5';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
@@ -483,6 +483,46 @@ class IronMQ extends IronCore {
             'subscribers' => array($subscriber_hash)
         );
         return self::json_decode($this->apiCall(self::DELETE, $url, $options));
+    }
+
+    /**
+     * Get Message's Push Statuses (for Push Queues only)
+     *
+     * Example:
+     * <code>
+     * statuses = $ironmq->getMessagePushStatuses("test_queue", $message_id)
+     * </code>
+     *
+     * @param string $queue_name
+     * @param string $message_id
+     * @return array
+     */
+    public function getMessagePushStatuses($queue_name, $message_id) {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/subscribers";
+        $response = self::json_decode($this->apiCall(self::GET, $url));
+        return $response->subscribers;
+    }
+
+    /**
+     * Delete Message's Push Status (for Push Queues only)
+     *
+     * Example:
+     * <code>
+     * $ironmq->deleteMessagePushStatus("test_queue", $message_id, $subscription_id)
+     * </code>
+     *
+     * @param string $queue_name
+     * @param string $message_id
+     * @param string $subscription_id
+     * @return mixed
+     */
+    public function deleteMessagePushStatus($queue_name, $message_id, $subscription_id) {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/subscribers/{$subscription_id}";
+        return self::json_decode($this->apiCall(self::DELETE, $url));
     }
 
 
