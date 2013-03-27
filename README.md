@@ -25,7 +25,7 @@ Copy `iron_mq.phar` to target directory and include it:
 
 ```php
 <?php
-require_once "phar://iron_mq.phar";
+require_once("phar://iron_mq.phar");
 ```
 
 Please note, [phar](http://php.net/manual/en/book.phar.php) extension available by default only from php 5.3.0
@@ -39,8 +39,8 @@ For php 5.2 you should install phar manually or use second option.
 
 ```php
 <?php
-require_once "IronCore.class.php"
-require_once "IronMQ.class.php"
+require_once("IronCore.class.php");
+require_once("IronMQ.class.php");
 ```
 
 ## Configure
