@@ -365,7 +365,7 @@ This set of subscribers will replace the existing subscribers.
 To add or remove subscribers, see the add subscribers endpoint or the remove subscribers endpoint.
 See below for example json.
 * `push_type`: Either `multicast` to push to all subscribers or `unicast` to push to one and only one subscriber. Default is `multicast`.
-* `retries`: How many times to retry on failure. Default is 3.
+* `retries`: How many times to retry on failure. Default is 3. Maximum is 100.
 * `retries_delay`: Delay between each retry in seconds. Default is 60.
 
 --
@@ -410,6 +410,19 @@ $statuses = $ironmq->getMessagePushStatuses($queue_name, $message_id);
 foreach ($statuses as $status) {
     $ironmq->deleteMessagePushStatus($queue_name, $message_id, $status["id"]);
 }
+```
+
+--
+
+### Revert Queue Back to Pull Queue
+
+If you want to revert you queue just update `push_type` to `"pull"`.
+
+```php
+<?php
+$params = array("push_type" => "pull");
+
+$ironmq->updateQueue($queue_name, $params);
 ```
 
 --
