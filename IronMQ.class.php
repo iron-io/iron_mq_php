@@ -51,6 +51,10 @@ class IronMQ_Message {
         }
     }
 
+    public function encrypt($encryption_key) {
+        $this->body = IronMQ_Crypt::encrypt($this->body, $encryption_key);
+    }
+
     public function getBody() {
         return $this->body;
     }
@@ -112,6 +116,29 @@ class IronMQ_Message {
             $array['expires_in'] = $this->getExpiresIn();
         }
         return $array;
+    }
+}
+
+class IronMQ_Crypt {
+    const method = 'AES-256-CBC';
+    const signature = 'ENCRYPTED';
+
+    public static function encrypt($message, $encryption_key){
+        $iv = openssl_random_pseudo_bytes(16);
+
+        $encrypted = openssl_encrypt($message, self::method, self::keyDigest($encryption_key), 0, $iv);
+
+        return self::signature . ":" . base64_encode($iv) . ":" . $encrypted;
+    }
+
+    public static function decrypt($body, $encryption_key){
+        list($signature, $iv, $message) = explode(":", $body);
+
+        return openssl_decrypt($message, self::method, self::keyDigest($encryption_key), 0, base64_decode($iv));
+    }
+
+    private static function keyDigest($encryption_key){
+        return openssl_digest($encryption_key, 'sha256', true);
     }
 }
 
@@ -233,15 +260,7 @@ class IronMQ extends IronCore {
      * @return mixed
      */
     public function postMessage($queue_name, $message, $properties = array()) {
-        $msg = new IronMQ_Message($message, $properties);
-        $req = array(
-            "messages" => array($msg->asArray())
-        );
-        $this->setCommonHeaders();
-        $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/messages";
-        $res = $this->apiCall(self::POST, $url, $req);
-        $decoded = self::json_decode($res);
+        $decoded = $this->postMessages($queue_name, array($message), $properties);
         $decoded->id = $decoded->ids[0];
         return $decoded;
     }
@@ -269,6 +288,9 @@ class IronMQ extends IronCore {
         );
         foreach($messages as $message) {
             $msg = new IronMQ_Message($message, $properties);
+            if ($this->encryption_key){
+                $msg->encrypt($this->encryption_key);
+            }
             array_push($req['messages'], $msg->asArray());
         }
         $this->setCommonHeaders();
@@ -299,10 +321,13 @@ class IronMQ extends IronCore {
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
         $result = self::json_decode($response);
-        if(count($result->messages) < 1) {
+
+        $messages = $this->postProcessMessages($result->messages);
+
+        if(count($messages) < 1) {
             return null;
         } else {
-            return $result->messages;
+            return $messages;
         }
     }
 
@@ -370,7 +395,7 @@ class IronMQ extends IronCore {
         }
         $this->setJsonHeaders();
         $response = self::json_decode($this->apiCall(self::GET, $url, $params));
-        return $response->messages;
+        return $this->postProcessMessages($response->messages);
     }
 
     /**
@@ -527,6 +552,16 @@ class IronMQ extends IronCore {
 
 
     /* PRIVATE FUNCTIONS */
+
+
+    private function postProcessMessages($messages){
+        if ($this->encryption_key){
+            foreach($messages as $k => $v) {
+                $messages[$k]->body = IronMQ_Crypt::decrypt($v->body, $this->encryption_key);
+            }
+        }
+        return $messages;
+    }
 
     private function setJsonHeaders(){
         $this->setCommonHeaders();
