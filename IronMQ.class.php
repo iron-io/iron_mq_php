@@ -12,7 +12,12 @@
  */
 
 
-class IronMQ_Exception extends Exception{
+if (!class_exists('IronCore')) {
+    echo "Please include IronCore class first\n";
+    return;
+}
+
+class IronMQ_Exception extends Exception {
 
 }
 
