@@ -6,13 +6,13 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.4.6
+ * @version 1.4.7
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
 
 
-if (!class_exists('IronCore')) {
+if (!class_exists('IronCore') && !class_exists('Composer\Autoload\ClassLoader')) {
     echo "Please include IronCore class first\n";
     return;
 }
@@ -122,7 +122,7 @@ class IronMQ_Message {
 
 class IronMQ extends IronCore {
 
-    protected $client_version = '1.4.6';
+    protected $client_version = '1.4.7';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
