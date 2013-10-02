@@ -416,7 +416,7 @@ foreach ($statuses as $status) {
 
 ### Revert Queue Back to Pull Queue
 
-If you want to revert you queue just update `push_type` to `"pull"`.
+If you want to revert your queue just update `push_type` to `"pull"`.
 
 ```php
 <?php
