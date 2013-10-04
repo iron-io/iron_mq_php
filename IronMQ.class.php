@@ -330,6 +330,19 @@ class IronMQ extends IronCore {
     }
 
     /**
+     * Get the message with the given id.
+     * @param string $queue_name Queue name
+     * @param string $message_id Message ID
+     * @return mixed
+     */
+    public function getMessageById($queue_name, $message_id) {
+        $this->setCommonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
+        return self::json_decode($this->apiCall(self::GET, $url));
+    }
+
+    /**
      * Delete a Message from a Queue
      * This call will delete the message. Be sure you call this after you’re done with a message or it will be placed back on the queue.
      *
