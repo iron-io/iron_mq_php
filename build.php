@@ -21,11 +21,11 @@ require "phar://iron_mq.phar/IronMQ.class.php";
 __HALT_COMPILER(); ?>');
 
 # Files
-$phar->addFile('../iron_core_php/IronCore.class.php','IronCore.class.php');
+$phar->addFile('../iron_core_php/IronCore.class.php', 'IronCore.class.php');
 $phar->addFile('IronMQ.class.php');
 $phar->addFile('LICENSE', 'LICENSE');
 
-echo "\ndone - ".(round(filesize('iron_mq.phar')/1024,2))." KB\n";
+echo "\ndone - ".(round(filesize('iron_mq.phar')/1024, 2))." KB\n";
 
 # Verification
 require "phar://iron_mq.phar";
