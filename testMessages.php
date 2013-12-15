@@ -8,7 +8,7 @@ $ironmq = new IronMQ();
 #$ironmq->debug_enabled = true;
 $ironmq->ssl_verifypeer = false;
 
-for ($i = 0; $i < 10; $i++){
+for ($i = 0; $i < 10; $i++) {
     echo "Post message:\n";
     $res = $ironmq->postMessage("test_queue", "Test Message $i");
     var_dump($res);

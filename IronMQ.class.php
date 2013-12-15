@@ -47,13 +47,13 @@ class IronMQ_Message {
     function __construct($message, $properties = array()) {
         $this->setBody($message);
 
-        if(array_key_exists("timeout", $properties)) {
+        if (array_key_exists("timeout", $properties)) {
             $this->setTimeout($properties['timeout']);
         }
-        if(array_key_exists("delay", $properties)) {
+        if (array_key_exists("delay", $properties)) {
             $this->setDelay($properties['delay']);
         }
-        if(array_key_exists("expires_in", $properties)) {
+        if (array_key_exists("expires_in", $properties)) {
             $this->setExpiresIn($properties['expires_in']);
         }
     }
@@ -63,7 +63,7 @@ class IronMQ_Message {
     }
 
     public function setBody($body) {
-        if(empty($body)) {
+        if (empty($body)) {
             throw new InvalidArgumentException("Please specify a body");
         } else {
             $this->body = (string) $body;
@@ -71,7 +71,7 @@ class IronMQ_Message {
     }
 
     public function getTimeout() {
-        if(!empty($this->timeout) || $this->timeout === 0) {# 0 is considered empty, but we want people to be able to set a timeout of 0
+        if (!empty($this->timeout) || $this->timeout === 0) {# 0 is considered empty, but we want people to be able to set a timeout of 0
             return $this->timeout;
         } else {
             return null;
@@ -83,7 +83,7 @@ class IronMQ_Message {
     }
 
     public function getDelay() {
-        if(!empty($this->delay) || $this->delay == 0) {# 0 is considered empty, but we want people to be able to set a delay of 0
+        if (!empty($this->delay) || $this->delay == 0) {# 0 is considered empty, but we want people to be able to set a delay of 0
             return $this->delay;
         } else {
             return null;
@@ -99,7 +99,7 @@ class IronMQ_Message {
     }
 
     public function setExpiresIn($expires_in) {
-        if($expires_in > self::max_expires_in) {
+        if ($expires_in > self::max_expires_in) {
             throw new InvalidArgumentException("Expires In can't be greater than ".self::max_expires_in.".");
         } else {
             $this->expires_in = $expires_in;
@@ -109,13 +109,13 @@ class IronMQ_Message {
     public function asArray() {
         $array = array();
         $array['body'] = $this->getBody();
-        if($this->getTimeout() != null) {
+        if ($this->getTimeout() != null) {
             $array['timeout'] = $this->getTimeout();
         }
-        if($this->getDelay() != null) {
+        if ($this->getDelay() != null) {
             $array['delay'] = $this->getDelay();
         }
-        if($this->getExpiresIn() != null) {
+        if ($this->getExpiresIn() != null) {
             $array['expires_in'] = $this->getExpiresIn();
         }
         return $array;
@@ -151,7 +151,7 @@ class IronMQ extends IronCore {
      * - port
      * - api_version
      */
-    function __construct($config_file_or_options = null){
+    function __construct($config_file_or_options = null) {
         $this->getConfigData($config_file_or_options);
         $this->url = "{$this->protocol}://{$this->host}:{$this->port}/{$this->api_version}/";
     }
@@ -163,10 +163,10 @@ class IronMQ extends IronCore {
      * @throws InvalidArgumentException
      */
     public function setProjectId($project_id) {
-        if (!empty($project_id)){
+        if (!empty($project_id)) {
           $this->project_id = $project_id;
         }
-        if (empty($this->project_id)){
+        if (empty($this->project_id)) {
             throw new InvalidArgumentException("Please set project_id");
         }
     }
@@ -182,10 +182,10 @@ class IronMQ extends IronCore {
     public function getQueues($page = 0, $per_page = self::LIST_QUEUES_PER_PAGE) {
         $url = "projects/{$this->project_id}/queues";
         $params = array();
-        if($page !== 0) {
+        if ($page !== 0) {
             $params['page'] = (int) $page;
         }
-        if($per_page !== self::LIST_QUEUES_PER_PAGE) {
+        if ($per_page !== self::LIST_QUEUES_PER_PAGE) {
             $params['per_page'] = (int) $per_page;
         }
         $this->setJsonHeaders();
@@ -297,16 +297,16 @@ class IronMQ extends IronCore {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $params = array();
-        if($count !== 1) {
+        if ($count !== 1) {
             $params['n'] = (int) $count;
         }
-        if($timeout !== self::GET_MESSAGE_TIMEOUT) {
+        if ($timeout !== self::GET_MESSAGE_TIMEOUT) {
             $params['timeout'] = (int) $timeout;
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
         $result = self::json_decode($response);
-        if(count($result->messages) < 1) {
+        if (count($result->messages) < 1) {
             return null;
         } else {
             return $result->messages;
@@ -322,9 +322,9 @@ class IronMQ extends IronCore {
      */
     public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT) {
         $messages = $this->getMessages($queue_name, 1, $timeout);
-        if ($messages){
+        if ($messages) {
             return $messages[0];
-        }else{
+        } else {
             return null;
         }
     }
@@ -385,7 +385,7 @@ class IronMQ extends IronCore {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/peek";
         $params = array();
-        if($count !== 1) {
+        if ($count !== 1) {
             $params['n'] = (int) $count;
         }
         $this->setJsonHeaders();
@@ -548,11 +548,11 @@ class IronMQ extends IronCore {
 
     /* PRIVATE FUNCTIONS */
 
-    private function setJsonHeaders(){
+    private function setJsonHeaders() {
         $this->setCommonHeaders();
     }
 
-    private function setPostHeaders(){
+    private function setPostHeaders() {
         $this->setCommonHeaders();
         $this->headers['Content-Type'] ='multipart/form-data';
     }
