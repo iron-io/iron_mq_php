@@ -19,18 +19,20 @@ if (!class_exists('IronCore')) {
     return;
 }
 
-class IronMQ_Exception extends Exception {
+class IronMQ_Exception extends Exception
+{
 
 }
 
 
-class IronMQ_Message {
+class IronMQ_Message
+{
     private $body;
     private $timeout;
     private $delay;
     private $expires_in;
 
-    const max_expires_in = 2592000;
+    const MAX_EXPIRES_IN = 2592000;
 
     /**
      * Create a new message.
@@ -42,9 +44,11 @@ class IronMQ_Message {
      * Fields in $properties array:
      * - timeout: Timeout, in seconds. After timeout, item will be placed back on queue. Defaults to 60.
      * - delay: The item will not be available on the queue until this many seconds have passed. Defaults to 0.
-     * - expires_in: How long, in seconds, to keep the item on the queue before it is deleted. Defaults to 604800 (7 days). Maximum is 2592000 (30 days).
+     * - expires_in: How long, in seconds, to keep the item on the queue before it is deleted.
+     *               Defaults to 604800 (7 days). Maximum is 2592000 (30 days).
      */
-    function __construct($message, $properties = array()) {
+    public function __construct($message, $properties = array())
+    {
         $this->setBody($message);
 
         if (array_key_exists("timeout", $properties)) {
@@ -58,11 +62,13 @@ class IronMQ_Message {
         }
     }
 
-    public function getBody() {
+    public function getBody()
+    {
         return $this->body;
     }
 
-    public function setBody($body) {
+    public function setBody($body)
+    {
         if (empty($body)) {
             throw new InvalidArgumentException("Please specify a body");
         } else {
@@ -70,43 +76,52 @@ class IronMQ_Message {
         }
     }
 
-    public function getTimeout() {
-        if (!empty($this->timeout) || $this->timeout === 0) {# 0 is considered empty, but we want people to be able to set a timeout of 0
+    public function getTimeout()
+    {
+        # 0 is considered empty, but we want people to be able to set a timeout of 0
+        if (!empty($this->timeout) || $this->timeout === 0) {
             return $this->timeout;
         } else {
             return null;
         }
     }
 
-    public function setTimeout($timeout) {
+    public function setTimeout($timeout)
+    {
         $this->timeout = $timeout;
     }
 
-    public function getDelay() {
-        if (!empty($this->delay) || $this->delay == 0) {# 0 is considered empty, but we want people to be able to set a delay of 0
+    public function getDelay()
+    {
+        # 0 is considered empty, but we want people to be able to set a delay of 0
+        if (!empty($this->delay) || $this->delay == 0) {
             return $this->delay;
         } else {
             return null;
         }
     }
 
-    public function setDelay($delay) {
+    public function setDelay($delay)
+    {
         $this->delay = $delay;
     }
 
-    public function getExpiresIn() {
+    public function getExpiresIn()
+    {
         return $this->expires_in;
     }
 
-    public function setExpiresIn($expires_in) {
-        if ($expires_in > self::max_expires_in) {
-            throw new InvalidArgumentException("Expires In can't be greater than ".self::max_expires_in.".");
+    public function setExpiresIn($expires_in)
+    {
+        if ($expires_in > self::MAX_EXPIRES_IN) {
+            throw new InvalidArgumentException("Expires In can't be greater than ".self::MAX_EXPIRES_IN.".");
         } else {
             $this->expires_in = $expires_in;
         }
     }
 
-    public function asArray() {
+    public function asArray()
+    {
         $array = array();
         $array['body'] = $this->getBody();
         if ($this->getTimeout() != null) {
@@ -122,7 +137,8 @@ class IronMQ_Message {
     }
 }
 
-class IronMQ extends IronCore {
+class IronMQ extends IronCore
+{
 
     protected $client_version = '1.4.9';
     protected $client_name    = 'iron_mq_php';
@@ -138,7 +154,7 @@ class IronMQ extends IronCore {
     const GET_MESSAGE_TIMEOUT = 60;
 
     /**
-     * @param string|array $config_file_or_options
+     * @param string|array $config
      *        Array of options or name of config file.
      * Fields in options array or in config:
      *
@@ -151,8 +167,9 @@ class IronMQ extends IronCore {
      * - port
      * - api_version
      */
-    function __construct($config_file_or_options = null) {
-        $this->getConfigData($config_file_or_options);
+    public function __construct($config = null)
+    {
+        $this->getConfigData($config);
         $this->url = "{$this->protocol}://{$this->host}:{$this->port}/{$this->api_version}/";
     }
 
@@ -162,9 +179,10 @@ class IronMQ extends IronCore {
      * @param string $project_id Project ID
      * @throws InvalidArgumentException
      */
-    public function setProjectId($project_id) {
+    public function setProjectId($project_id)
+    {
         if (!empty($project_id)) {
-          $this->project_id = $project_id;
+            $this->project_id = $project_id;
         }
         if (empty($this->project_id)) {
             throw new InvalidArgumentException("Please set project_id");
@@ -179,7 +197,8 @@ class IronMQ extends IronCore {
      * @param int $per_page
      *        Number of queues per page
      */
-    public function getQueues($page = 0, $per_page = self::LIST_QUEUES_PER_PAGE) {
+    public function getQueues($page = 0, $per_page = self::LIST_QUEUES_PER_PAGE)
+    {
         $url = "projects/{$this->project_id}/queues";
         $params = array();
         if ($page !== 0) {
@@ -199,7 +218,8 @@ class IronMQ extends IronCore {
      * @param string $queue_name
      * @return mixed
      */
-    public function getQueue($queue_name) {
+    public function getQueue($queue_name)
+    {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
         $this->setJsonHeaders();
@@ -212,7 +232,8 @@ class IronMQ extends IronCore {
      * @param string $queue_name
      * @return mixed
      */
-    public function clearQueue($queue_name) {
+    public function clearQueue($queue_name)
+    {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/clear";
         $this->setJsonHeaders();
@@ -239,7 +260,8 @@ class IronMQ extends IronCore {
      * @param array $properties
      * @return mixed
      */
-    public function postMessage($queue_name, $message, $properties = array()) {
+    public function postMessage($queue_name, $message, $properties = array())
+    {
         $msg = new IronMQ_Message($message, $properties);
         $req = array(
             "messages" => array($msg->asArray())
@@ -270,11 +292,12 @@ class IronMQ extends IronCore {
      * @param array $properties array of message properties, applied to each message in $messages
      * @return mixed
      */
-    public function postMessages($queue_name, $messages, $properties = array()) {
+    public function postMessages($queue_name, $messages, $properties = array())
+    {
         $req = array(
             "messages" => array()
         );
-        foreach($messages as $message) {
+        foreach ($messages as $message) {
             $msg = new IronMQ_Message($message, $properties);
             array_push($req['messages'], $msg->asArray());
         }
@@ -293,7 +316,8 @@ class IronMQ extends IronCore {
      * @param int $timeout
      * @return array|null array of messages or null
      */
-    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT) {
+    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
+    {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $params = array();
@@ -320,7 +344,8 @@ class IronMQ extends IronCore {
      * @param int $timeout
      * @return mixed|null single message or null
      */
-    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT) {
+    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
+    {
         $messages = $this->getMessages($queue_name, 1, $timeout);
         if ($messages) {
             return $messages[0];
@@ -335,7 +360,8 @@ class IronMQ extends IronCore {
      * @param string $message_id Message ID
      * @return mixed
      */
-    public function getMessageById($queue_name, $message_id) {
+    public function getMessageById($queue_name, $message_id)
+    {
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
@@ -344,13 +370,15 @@ class IronMQ extends IronCore {
 
     /**
      * Delete a Message from a Queue
-     * This call will delete the message. Be sure you call this after you’re done with a message or it will be placed back on the queue.
+     * This call will delete the message. Be sure you call this after you’re done with a message,
+     * or it will be placed back on the queue.
      *
      * @param $queue_name
      * @param $message_id
      * @return mixed
      */
-    public function deleteMessage($queue_name, $message_id) {
+    public function deleteMessage($queue_name, $message_id)
+    {
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
@@ -364,7 +392,8 @@ class IronMQ extends IronCore {
      * @param string $queue_name
      * @return object|null  message or null if queue is empty
      */
-    public function peekMessage($queue_name) {
+    public function peekMessage($queue_name)
+    {
         $messages = $this->peekMessages($queue_name, 1);
         if ($messages == null) {
             return null;
@@ -381,7 +410,8 @@ class IronMQ extends IronCore {
      * @param int $count The maximum number of messages to peek. Maximum is 100.
      * @return array|null array of messages or null if queue is empty
      */
-    public function peekMessages($queue_name, $count) {
+    public function peekMessages($queue_name, $count)
+    {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/peek";
         $params = array();
@@ -395,13 +425,15 @@ class IronMQ extends IronCore {
 
     /**
      * Touch a Message on a Queue
-     * Touching a reserved message extends its timeout by the duration specified when the message was created, which is 60 seconds by default.
+     * Touching a reserved message extends its timeout by the duration specified when the message was created,
+     * which is 60 seconds by default.
      *
      * @param string $queue_name
      * @param string $message_id
      * @return mixed
      */
-    public function touchMessage($queue_name, $message_id) {
+    public function touchMessage($queue_name, $message_id)
+    {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/touch";
@@ -410,14 +442,17 @@ class IronMQ extends IronCore {
 
     /**
      * Release a Message on a Queue
-     * Releasing a reserved message unreserves the message and puts it back on the queue as if the message had timed out.
+     * Releasing a reserved message unreserves the message and puts it back on the queue,
+     * as if the message had timed out.
      *
      * @param string $queue_name
      * @param string $message_id
-     * @param int $delay The item will not be available on the queue until this many seconds have passed. Default is 0 seconds. Maximum is 604,800 seconds (7 days).
+     * @param int $delay The item will not be available on the queue until this many seconds have passed.
+     *                   Default is 0 seconds. Maximum is 604,800 seconds (7 days).
      * @return mixed
      */
-    public function releaseMessage($queue_name, $message_id, $delay = 0) {
+    public function releaseMessage($queue_name, $message_id, $delay = 0)
+    {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $params = array();
@@ -435,7 +470,8 @@ class IronMQ extends IronCore {
      * @param string $queue_name
      * @return mixed
      */
-    public function deleteQueue($queue_name) {
+    public function deleteQueue($queue_name)
+    {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
@@ -452,7 +488,8 @@ class IronMQ extends IronCore {
      * - "retries" Number of retries. 3 by default
      * - "retries_delay" Delay between retries. 60 (seconds) by default
      */
-    public function updateQueue($queue_name, $options) {
+    public function updateQueue($queue_name, $options)
+    {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
@@ -472,7 +509,8 @@ class IronMQ extends IronCore {
      * - "url" Subscriber url
      * @return mixed
      */
-    public function addSubscriber($queue_name, $subscriber_hash) {
+    public function addSubscriber($queue_name, $subscriber_hash)
+    {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/subscribers";
@@ -495,7 +533,8 @@ class IronMQ extends IronCore {
      * - "url" Subscriber url
      * @return mixed
      */
-    public function removeSubscriber($queue_name, $subscriber_hash) {
+    public function removeSubscriber($queue_name, $subscriber_hash)
+    {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/subscribers";
@@ -517,7 +556,8 @@ class IronMQ extends IronCore {
      * @param string $message_id
      * @return array
      */
-    public function getMessagePushStatuses($queue_name, $message_id) {
+    public function getMessagePushStatuses($queue_name, $message_id)
+    {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/subscribers";
@@ -538,7 +578,8 @@ class IronMQ extends IronCore {
      * @param string $subscription_id
      * @return mixed
      */
-    public function deleteMessagePushStatus($queue_name, $message_id, $subscription_id) {
+    public function deleteMessagePushStatus($queue_name, $message_id, $subscription_id)
+    {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/subscribers/{$subscription_id}";
@@ -548,13 +589,14 @@ class IronMQ extends IronCore {
 
     /* PRIVATE FUNCTIONS */
 
-    private function setJsonHeaders() {
+    private function setJsonHeaders()
+    {
         $this->setCommonHeaders();
     }
 
-    private function setPostHeaders() {
+    private function setPostHeaders()
+    {
         $this->setCommonHeaders();
         $this->headers['Content-Type'] ='multipart/form-data';
     }
-
 }
