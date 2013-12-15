@@ -14,7 +14,7 @@ $phar = new Phar('iron_mq.phar');
 # Loader
 $phar->setStub('<?php
 Phar::mapPhar("iron_mq.phar");
-if (!class_exists("IronCore")){
+if (!class_exists("IronCore")) {
     require "phar://iron_mq.phar/IronCore.class.php";
 }
 require "phar://iron_mq.phar/IronMQ.class.php";
