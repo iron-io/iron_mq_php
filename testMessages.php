@@ -40,6 +40,17 @@ for ($i = 0; $i < 10; $i++) {
     $message = $ironmq->getMessage("test_queue");
     print_r($message);
 
+    echo "Getting multiple messages..\n";
+    $messageIds = array();
+    $messages = $ironmq->getMessages("test-queue-multi", 2);
+    foreach($messages as $message){
+        array_push($messageIds, $message->id);
+    }
+    echo "Deleting messages with ids..\n";
+    print_r($messageIds);
+    $res = $ironmq->deleteMessages("test-queue-multi", $messageIds);
+    print_r($res);
+
 
     echo "\n------$i-------\n";
 }
