@@ -121,6 +121,13 @@ $ironmq->getMessage($queue_name);
 When you pop/get a message from the queue, it will NOT be deleted.
 It will eventually go back onto the queue after a timeout if you don't delete it (default timeout is 60 seconds).
 
+Get multiple messages in one API call:
+
+```php
+<?php
+$ironmq->getMessage($queue_name, 3);
+```
+
 --
 
 ### Delete a Message from the Queue
@@ -130,6 +137,14 @@ It will eventually go back onto the queue after a timeout if you don't delete it
 $ironmq->deleteMessage($queue_name, $message_id);
 ```
 Delete a message from the queue when you're done with it.
+
+Delete multiple messages in one API call:
+
+```php
+<?php
+$ironmq->deleteMessages($queue_name, array("xxxxxxxxx", "xxxxxxxxx"));
+```
+Delete multiple messages specified by messages id array.
 
 --
 

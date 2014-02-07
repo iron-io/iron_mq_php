@@ -386,6 +386,30 @@ class IronMQ extends IronCore
     }
 
     /**
+     * Delete Messages from a Queue
+     * This call will delete the messages. Be sure you call this after you’re done with a message,
+     * or it will be placed back on the queue.
+     *
+     * @param $queue_name
+     * @param $message_ids
+     * @return mixed
+     */
+    public function deleteMessages($queue_name, $message_ids)
+    {
+        $req = array(
+            "ids" => array()
+        );
+        foreach ($message_ids as $message_id) {
+            array_push($req['ids'], $message_id);
+        }
+        $this->setCommonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/messages";
+        $result = $this->apiCall(self::DELETE, $url, $req);
+        return self::json_decode($result);
+    }
+
+    /**
      * Peek Messages on a Queue
      * Peeking at a queue returns the next messages on the queue, but it does not reserve them.
      *
