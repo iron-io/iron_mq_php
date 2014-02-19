@@ -51,6 +51,34 @@ for ($i = 0; $i < 10; $i++) {
     $res = $ironmq->deleteMessages("test-queue-multi", $messageIds);
     print_r($res);
 
+    echo "Adding alerts..\n";
+    $res = $ironmq->postMessage("test_alert_queue", "Test Message 1");
+    $first_alert = array(
+        'type' => 'fixed',
+        'direction' => 'desc',
+        'trigger' => 1001,
+        'snooze' => 10,
+        'queue' => 'test_alert_queue');
+    $second_alert = array(
+        'type' => 'fixed',
+        'direction' => 'asc',
+        'trigger' => 1000,
+        'snooze' => 5,
+        'queue' => 'test_alert_queue',);
+
+    $res = $ironmq->addAlerts("test_alert_queue", array($first_alert, $second_alert));
+    print_r($res);
+
+    echo "Deleting alerts with ids..\n";
+    $message = $ironmq->getQueue("test_alert_queue");
+    $alert_ids = array();
+    $alerts = $message-> alerts;
+    foreach($alerts as $alert) {
+        array_push($alert_ids, array('id'=>$alert->id));
+    }
+    print_r($alert_ids);
+    $res = $ironmq->deleteAlerts("test_alert_queue", $alert_ids);
+    print_r($res);
 
     echo "\n------$i-------\n";
 }
