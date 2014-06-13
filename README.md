@@ -159,6 +159,14 @@ There are two ways to fix this error:
 
 1. Disable SSL sertificate verification - add this line after IronMQ initialization: `$ironmq->ssl_verifypeer = false;`
 2. Switch to http protocol - add this to configuration options: `protocol = http` and `port = 80`
+3. Fix the error! Recommended solution: download actual certificates - [cacert.pem](http://curl.haxx.se/docs/caextract.html) and add them to `php.ini`:
+
+```
+[PHP]
+
+curl.cainfo = "path\to\cacert.pem"
+```
+
 
 --
 
