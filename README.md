@@ -418,7 +418,8 @@ $params = array(
     "subscribers" => array(
         array("url" => "http://your.first.cool.endpoint.com/push"),
         array("url" => "http://your.second.cool.endpoint.com/push")
-    )
+    ),
+    "error_queue" => "my_error_queue_name")
 );
 
 $ironmq->updateQueue($queue_name, $params);
@@ -433,6 +434,7 @@ See below for example json.
 * `push_type`: Either `multicast` to push to all subscribers or `unicast` to push to one and only one subscriber. Default is `multicast`.
 * `retries`: How many times to retry on failure. Default is 3. Maximum is 100.
 * `retries_delay`: Delay between each retry in seconds. Default is 60.
+* `error_queue`: The name of another queue where information about messages that can't be delivered after retrying retries number of times will be placed. Pass in an empty string to disable error queues. Default is disabled. see: [http://dev.iron.io/mq/reference/push_queues/#error_queues](http://dev.iron.io/mq/reference/push_queues/#error_queues)
 
 --
 
