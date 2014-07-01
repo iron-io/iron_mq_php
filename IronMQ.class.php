@@ -197,18 +197,18 @@ class IronMQ extends IronCore
      * @param int $per_page
      *        Number of queues per page
      */
-    public function getQueues($page = 0, $per_page = self::LIST_QUEUES_PER_PAGE)
+    public function getQueues($previous = NULL, $per_page = self::LIST_QUEUES_PER_PAGE)
     {
         $url = "projects/{$this->project_id}/queues";
         $params = array();
-        if ($page !== 0) {
-            $params['page'] = (int) $page;
+        if (!is_null($previous)) {
+            $params['previous'] = $previous;
         }
         if ($per_page !== self::LIST_QUEUES_PER_PAGE) {
             $params['per_page'] = (int) $per_page;
         }
         $this->setJsonHeaders();
-        return self::json_decode($this->apiCall(self::GET, $url, $params));
+        return self::json_decode($this->apiCall(self::GET, $url, $params))->queues;
     }
 
     /**

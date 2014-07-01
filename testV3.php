@@ -75,6 +75,8 @@ $id = $ironmq->postMessage("test_queue", "Test Message 0")->ids[0];
 $message = $ironmq->getMessageById("test_queue", $id);
 var_dump($message);
 
+$queues = $ironmq->getQueues('n', 25);
+var_dump($queues);
 
 #for ($i = 0; $i < 10; $i++) {
 #    echo "Post message:\n";
