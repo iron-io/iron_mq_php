@@ -315,6 +315,7 @@ class IronMQ extends IronCore
      * @param int $count
      * @param int $timeout
      * @return array|null array of messages or null
+     * @deprecated Use reserveMessages instead
      */
     public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
     {
@@ -356,6 +357,7 @@ class IronMQ extends IronCore
      * @param string $queue_name Queue name
      * @param int $timeout
      * @return mixed|null single message or null
+     * @deprecated Use reserveMessages instead
      */
     public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
     {
