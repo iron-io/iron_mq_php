@@ -404,12 +404,19 @@ class IronMQ extends IronCore
      * @param $message_id
      * @return mixed
      */
-    public function deleteMessage($queue_name, $message_id)
+    public function deleteMessage($queue_name, $message_id, $reservation_id = NULL)
     {
+        $req = array(
+            "reservation_id" => $reservation_id
+        );
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
-        return $this->apiCall(self::DELETE, $url);
+        if (is_null($reservation_id)) {
+            return $this->apiCall(self::DELETE, $url);
+        } else {
+            return $this->apiCall(self::DELETE, $url, $req);
+        }
     }
 
     /**
@@ -418,16 +425,22 @@ class IronMQ extends IronCore
      * or it will be placed back on the queue.
      *
      * @param $queue_name
-     * @param $message_ids
+     * @param $messages
      * @return mixed
      */
-    public function deleteMessages($queue_name, $message_ids)
+    public function deleteMessages($queue_name, $messages)
     {
         $req = array(
             "ids" => array()
         );
-        foreach ($message_ids as $message_id) {
-            array_push($req['ids'], $message_id);
+        foreach ($messages as $message) {
+            if (is_string($message)) {
+                array_push($req['ids'], $message);
+            } else if (is_object($message)) {
+                array_push($req['ids'], array('id' => $message->id, 'reservation_id' => $message->reservation_id));
+            } else if (is_array($message)) {
+                array_push($req['ids'], array('id' => $message['id'], 'reservation_id' => $message['reservation_id']));
+            }
         }
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);

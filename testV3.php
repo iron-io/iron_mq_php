@@ -36,6 +36,38 @@ var_dump($res);
 $res = $ironmq->peekMessages("test_queue", 2);
 var_dump($res);
 
+$ironmq->clearQueue("test_queue");
+
+$ironmq->postMessage("test_queue", "Test Message 7");
+$message = $ironmq->reserveMessage("test_queue");
+var_dump($message);
+$res = $ironmq->deleteMessage("test_queue", $message->id, $message->reservation_id);
+var_dump($res);
+
+$ironmq->clearQueue("test_queue");
+
+$ironmq->postMessage("test_queue", "Test Message 0");
+$message = $ironmq->peekMessage("test_queue");
+var_dump($message);
+$res = $ironmq->deleteMessage("test_queue", $message->id);
+var_dump($res);
+
+$ironmq->clearQueue("test_queue");
+
+$ironmq->postMessage("test_queue", "Test Message 8");
+$ironmq->postMessage("test_queue", "Test Message 9");
+$messages = $ironmq->reserveMessages("test_queue", 2);
+var_dump($messages);
+
+$res = $ironmq->deleteMessages("test_queue", $messages);
+# or
+# m1 = array('id' => $messages[0]->id, 'reservation_id' => $messages[0]->reservation_id);
+# m2 = array('id' => $messages[1]->id, 'reservation_id' => $messages[1]->reservation_id);
+# $res = $ironmq->deleteMessages("test_queue", array(m1, m2));
+# or
+# for non-reserved messages
+# $res = $ironmq->deleteMessages("test_queue", array($messages[0]->id, $messages[1]->id));
+var_dump($res);
 
 
 #for ($i = 0; $i < 10; $i++) {
