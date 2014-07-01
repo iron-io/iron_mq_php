@@ -144,10 +144,10 @@ class IronMQ extends IronCore
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
-        'protocol'    => 'https',
-        'host'        => 'mq-aws-us-east-1.iron.io',
-        'port'        => '443',
-        'api_version' => '1',
+        'protocol'    => 'http',
+        'host'        => 'localhost',
+        'port'        => '8080',
+        'api_version' => '3',
     );
 
     const LIST_QUEUES_PER_PAGE = 30;
@@ -235,9 +235,9 @@ class IronMQ extends IronCore
     public function clearQueue($queue_name)
     {
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/clear";
+        $url = "projects/{$this->project_id}/queues/$queue/messages";
         $this->setJsonHeaders();
-        return self::json_decode($this->apiCall(self::POST, $url));
+        return self::json_decode($this->apiCall(self::DELETE, $url));
     }
 
     /**
