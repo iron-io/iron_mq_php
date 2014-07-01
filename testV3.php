@@ -96,6 +96,9 @@ var_dump($res);
 
 $ironmq->clearQueue("test_queue");
 
+$res = $ironmq->getQueue("test_queue");
+var_dump($res);
+
 
 #for ($i = 0; $i < 10; $i++) {
 #    echo "Post message:\n";
