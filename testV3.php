@@ -4,7 +4,7 @@
 require("../iron_core_php/IronCore.class.php");
 require("IronMQ.class.php");
 
-$ironmq = new IronMQ();
+$ironmq = new IronMQ(array('host' => 'localhost', 'port' => 8080, 'protocol' => 'http'));
 $ironmq->debug_enabled = true;
 $ironmq->ssl_verifypeer = false;
 
