@@ -464,7 +464,7 @@ class IronMQ extends IronCore
     public function peekMessages($queue_name, $count)
     {
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/messages/peek";
+        $url = "projects/{$this->project_id}/queues/$queue/messages";
         $params = array();
         if ($count !== 1) {
             $params['n'] = (int) $count;

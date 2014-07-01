@@ -21,6 +21,23 @@ var_dump($res);
 $res = $ironmq->getMessage("test_queue");
 var_dump($res);
 
+$ironmq->postMessage("test_queue", "Test Message 4");
+$ironmq->postMessage("test_queue", "Test Message 5");
+$ironmq->postMessage("test_queue", "Test Message 6");
+$res = $ironmq->reserveMessages("test_queue", 2);
+var_dump($res);
+
+$ironmq->clearQueue("test_queue");
+
+$ironmq->postMessage("test_queue", "Test Message 5");
+$ironmq->postMessage("test_queue", "Test Message 6");
+$res = $ironmq->peekMessages("test_queue", 2);
+var_dump($res);
+$res = $ironmq->peekMessages("test_queue", 2);
+var_dump($res);
+
+
+
 #for ($i = 0; $i < 10; $i++) {
 #    echo "Post message:\n";
 #    $res = $ironmq->postMessage("test_queue", "Test Message $i");
