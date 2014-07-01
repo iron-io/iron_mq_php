@@ -544,11 +544,13 @@ class IronMQ extends IronCore
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/alerts";
+        $url = "projects/{$this->project_id}/queues/$queue";
         $options = array(
-            'alerts' => $alerts_hash
+            'queue' => array(
+                'alerts' => $alerts_hash
+            )
         );
-        return self::json_decode($this->apiCall(self::POST, $url, $options));
+        return self::json_decode($this->apiCall(self::PUT, $url, $options));
     }
 
     /**
@@ -560,13 +562,7 @@ class IronMQ extends IronCore
      */
     public function updateAlerts($queue_name, $alerts_hash)
     {
-        $this->setJsonHeaders();
-        $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/alerts";
-        $options = array(
-            'alerts' => $alerts_hash
-        );
-        return self::json_decode($this->apiCall(self::PUT, $url, $options));
+        return $this->addAlerts($queue_name, $alerts_hash);
     }
 
     /**
@@ -575,6 +571,7 @@ class IronMQ extends IronCore
      * @param string $queue_name
      * @param array $alerts_ids
      * @return mixed
+     * @deprecated
      */
     public function deleteAlerts($queue_name, $alerts_ids)
     {
@@ -594,6 +591,7 @@ class IronMQ extends IronCore
      * @param string $queue_name
      * @param string $alert_id
      * @return mixed
+     * @deprecated
      */
     public function deleteAlertById($queue_name, $alert_id)
     {
@@ -624,17 +622,27 @@ class IronMQ extends IronCore
      *
      * @param string $queue_name
      * @param array $options Parameters to change. keys:
-     * - "subscribers" url's to subscribe to
-     * - "push_type" multicast (default) or unicast.
-     * - "retries" Number of retries. 3 by default
-     * - "retries_delay" Delay between retries. 60 (seconds) by default
      */
     public function updateQueue($queue_name, $options)
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
-        return self::json_decode($this->apiCall(self::POST, $url, $options));
+        return self::json_decode($this->apiCall(self::PATCH, $url, $options));
+    }
+
+    /**
+     * Creates a queue
+     *
+     * @param string $queue_name
+     * @param array $options Parameters to change. keys:
+     */
+    public function createQueue($queue_name, $options)
+    {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue";
+        return self::json_decode($this->apiCall(self::PUT, $url, $options));
     }
 
     /**

@@ -99,6 +99,21 @@ $ironmq->clearQueue("test_queue");
 $res = $ironmq->getQueue("test_queue");
 var_dump($res);
 
+$ironmq->postMessage("test_queue_aler", "Test Message 1");
+$res = $ironmq->getQueue("test_queue_aler");
+var_dump($res);
+$res = $ironmq->addAlerts("test_queue_aler", array(array('type' => 'progressive', 'direction' => 'asc', 'trigger' =>  200, 'queue' => 'ddd')));
+var_dump($res);
+$res = $ironmq->getQueue("test_queue_aler");
+var_dump($res);
+
+$ironmq->postMessage("test_queue_upd", "Test Message 2");
+$res = $ironmq->getQueue("test_queue_upd");
+$res = $ironmq->updateQueue("test_queue_upd", array('queue' => array('message_expiration' => 600777)));
+var_dump($res);
+
+$res = $ironmq->createQueue("test_queue_c", array('queue' => array('message_expiration' => 600333)));
+var_dump($res);
 
 #for ($i = 0; $i < 10; $i++) {
 #    echo "Post message:\n";
