@@ -78,6 +78,25 @@ var_dump($message);
 $queues = $ironmq->getQueues('n', 25);
 var_dump($queues);
 
+$ironmq->clearQueue("test_queue");
+
+$ironmq->postMessage("test_queue", "Test Message 1");
+$ironmq->postMessage("test_queue", "Test Message 2");
+$message = $ironmq->reserveMessage("test_queue");
+$res = $ironmq->touchMessage("test_queue", $message->id, $message->reservation_id);
+var_dump($res);
+
+$ironmq->clearQueue("test_queue");
+
+$ironmq->postMessage("test_queue", "Test Message 1");
+$ironmq->postMessage("test_queue", "Test Message 2");
+$message = $ironmq->reserveMessage("test_queue");
+$res = $ironmq->releaseMessage("test_queue", $message->id, 0, $message->reservation_id);
+var_dump($res);
+
+$ironmq->clearQueue("test_queue");
+
+
 #for ($i = 0; $i < 10; $i++) {
 #    echo "Post message:\n";
 #    $res = $ironmq->postMessage("test_queue", "Test Message $i");

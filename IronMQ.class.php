@@ -496,12 +496,15 @@ class IronMQ extends IronCore
      * @param string $message_id
      * @return mixed
      */
-    public function touchMessage($queue_name, $message_id)
+    public function touchMessage($queue_name, $message_id, $reservation_id)
     {
+        $req = array(
+            "reservation_id" => $reservation_id
+        );
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/touch";
-        return self::json_decode($this->apiCall(self::POST, $url));
+        return self::json_decode($this->apiCall(self::POST, $url, $req));
     }
 
     /**
@@ -515,13 +518,16 @@ class IronMQ extends IronCore
      *                   Default is 0 seconds. Maximum is 604,800 seconds (7 days).
      * @return mixed
      */
-    public function releaseMessage($queue_name, $message_id, $delay = 0)
+    public function releaseMessage($queue_name, $message_id, $delay, $reservation_id)
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $params = array();
         if ($delay !== 0) {
             $params['delay'] = (int) $delay;
+        }
+        if (!is_null($reservation_id)) {
+            $params['reservation_id'] = $reservation_id;
         }
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/release";
         return self::json_decode($this->apiCall(self::POST, $url, $params));
