@@ -69,6 +69,12 @@ $res = $ironmq->deleteMessages("test_queue", $messages);
 # $res = $ironmq->deleteMessages("test_queue", array($messages[0]->id, $messages[1]->id));
 var_dump($res);
 
+$ironmq->clearQueue("test_queue");
+
+$id = $ironmq->postMessage("test_queue", "Test Message 0")->ids[0];
+$message = $ironmq->getMessageById("test_queue", $id);
+var_dump($message);
+
 
 #for ($i = 0; $i < 10; $i++) {
 #    echo "Post message:\n";

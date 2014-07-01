@@ -392,7 +392,7 @@ class IronMQ extends IronCore
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
-        return self::json_decode($this->apiCall(self::GET, $url));
+        return self::json_decode($this->apiCall(self::GET, $url))->message;
     }
 
     /**
