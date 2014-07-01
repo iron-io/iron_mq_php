@@ -8,10 +8,17 @@ $ironmq = new IronMQ();
 $ironmq->debug_enabled = true;
 $ironmq->ssl_verifypeer = false;
 
-$res = $ironmq->postMessage("test_queue", "Test Message i");
+$res = $ironmq->postMessage("test_queue", "Test Message 1");
 var_dump($res);
 
 $res = $ironmq->clearQueue("test_queue");
+var_dump($res);
+
+$ironmq->postMessage("test_queue", "Test Message 2");
+$ironmq->postMessage("test_queue", "Test Message 3");
+$res = $ironmq->getMessage("test_queue");
+var_dump($res);
+$res = $ironmq->getMessage("test_queue");
 var_dump($res);
 
 #for ($i = 0; $i < 10; $i++) {

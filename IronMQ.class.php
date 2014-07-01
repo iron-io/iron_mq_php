@@ -309,7 +309,7 @@ class IronMQ extends IronCore
     }
 
     /**
-     * Get multiplie messages from queue
+     * Reserve multiplie messages from queue
      *
      * @param string $queue_name Queue name
      * @param int $count
@@ -318,8 +318,21 @@ class IronMQ extends IronCore
      */
     public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
     {
+        return $this->reserveMessages($queue_name, $count, $timeout);
+    }
+
+    /**
+     * Reserve multiplie messages from queue
+     *
+     * @param string $queue_name Queue name
+     * @param int $count
+     * @param int $timeout
+     * @return array|null array of messages or null
+     */
+    public function reserveMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
+    {
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/messages";
+        $url = "projects/{$this->project_id}/queues/$queue/reservations";
         $params = array();
         if ($count !== 1) {
             $params['n'] = (int) $count;
@@ -328,7 +341,7 @@ class IronMQ extends IronCore
             $params['timeout'] = (int) $timeout;
         }
         $this->setJsonHeaders();
-        $response = $this->apiCall(self::GET, $url, $params);
+        $response = $this->apiCall(self::POST, $url, $params);
         $result = self::json_decode($response);
         if (count($result->messages) < 1) {
             return null;
@@ -338,7 +351,7 @@ class IronMQ extends IronCore
     }
 
     /**
-     * Get single message from queue
+     * Reserve single message from queue
      *
      * @param string $queue_name Queue name
      * @param int $timeout
@@ -346,7 +359,19 @@ class IronMQ extends IronCore
      */
     public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
     {
-        $messages = $this->getMessages($queue_name, 1, $timeout);
+        return $this->reserveMessage($queue_name, $timeout);
+    }
+
+    /**
+     * Reserve single message from queue
+     *
+     * @param string $queue_name Queue name
+     * @param int $timeout
+     * @return mixed|null single message or null
+     */
+    public function reserveMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
+    {
+        $messages = $this->reserveMessages($queue_name, 1, $timeout);
         if ($messages) {
             return $messages[0];
         } else {
