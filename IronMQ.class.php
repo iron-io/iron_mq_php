@@ -573,16 +573,9 @@ class IronMQ extends IronCore
      * @return mixed
      * @deprecated
      */
-    public function deleteAlerts($queue_name, $alerts_ids)
+    public function deleteAlerts($queue_name)
     {
-        $this->setJsonHeaders();
-        $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/alerts";
-        $options = array(
-            'alerts' => $alerts_ids
-        );
-        print_r(json_encode($options));
-        return self::json_decode($this->apiCall(self::DELETE, $url, $options));
+        return $this->addAlerts($queue_name, array());
     }
 
     /**
@@ -628,7 +621,7 @@ class IronMQ extends IronCore
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
-        return self::json_decode($this->apiCall(self::PATCH, $url, $options));
+        return self::json_decode($this->apiCall(self::PATCH, $url, array('queue' => $options)));
     }
 
     /**
@@ -642,7 +635,7 @@ class IronMQ extends IronCore
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
-        return self::json_decode($this->apiCall(self::PUT, $url, $options));
+        return self::json_decode($this->apiCall(self::PUT, $url, array('queue' => $options)));
     }
 
     /**
@@ -657,6 +650,7 @@ class IronMQ extends IronCore
      * @param array $subscriber_hash Subscriber. keys:
      * - "url" Subscriber url
      * @return mixed
+     * @deprecated use updateSubscribers instead
      */
     public function addSubscriber($queue_name, $subscriber_hash)
     {
@@ -667,6 +661,35 @@ class IronMQ extends IronCore
             'subscribers' => array($subscriber_hash)
         );
         return self::json_decode($this->apiCall(self::POST, $url, $options));
+    }
+
+    /**
+     * Update Subscribers of a Queue
+     *
+     * Example:
+     * <code>
+     * $ironmq->updateSubscribers("test_queue", array(array("url" => "http://example.com"), ... ));
+     * </code>
+     *
+     * @param string $queue_name
+     * @param array $subscribers Array of subscribers. keys:
+     * - "url" Subscriber url
+     * - "name" Name of subscriber 
+     * @return mixed
+     */
+    public function updateSubscribers($queue_name, $subscribers)
+    {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue";
+        $options = array(
+            'queue' => array(
+                'push' => array(
+                    'subscribers' => $subscribers
+                )
+            )
+        );
+        return self::json_decode($this->apiCall(self::PATCH, $url, $options));
     }
 
     /**
@@ -681,6 +704,7 @@ class IronMQ extends IronCore
      * @param array $subscriber_hash Subscriber. keys:
      * - "url" Subscriber url
      * @return mixed
+     * @deprecated 
      */
     public function removeSubscriber($queue_name, $subscriber_hash)
     {

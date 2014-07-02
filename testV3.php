@@ -109,9 +109,18 @@ var_dump($res);
 
 $ironmq->postMessage("test_queue_upd", "Test Message 2");
 $res = $ironmq->getQueue("test_queue_upd");
-$res = $ironmq->updateQueue("test_queue_upd", array('queue' => array('message_expiration' => 600777)));
+$res = $ironmq->updateQueue("test_queue_upd", array('message_expiration' => 600777));
 var_dump($res);
 
-$res = $ironmq->createQueue("test_queue_c", array('queue' => array('message_expiration' => 600333)));
+$res = $ironmq->createQueue("test_queue_c", array('message_expiration' => 600333));
 var_dump($res);
 
+$ironmq->deleteQueue("test_queue_push");
+$res = $ironmq->createQueue("test_queue_push", array('type' => 'multicast', 'push' => array('subscribers' => array(array('url' => 'http://localhost:3000/test')))));
+var_dump($res);
+$res = $ironmq->updateSubscribers("test_queue_push", 
+	array(
+		array('url' => 'http://localhost:3000/test2'), 
+		array('url' => 'http://localhost:3000/test3')
+	));
+var_dump($res);
