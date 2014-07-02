@@ -1,10 +1,9 @@
-IronMQ PHP Client Library
+IronMQ v3 PHP Client Library
 -------------
 
 [IronMQ](http://www.iron.io/products/mq) is an elastic message queue for managing data and event flow within cloud applications and between systems.
 
-The [full API documentation is here](http://dev.iron.io/mq/reference/api/) and this client tries to stick to the API as
-much as possible so if you see an option in the API docs, you can use it in the methods below.
+This library uses IronMQ API v3.
 
 ## Getting Started
 
