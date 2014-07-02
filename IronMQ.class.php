@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.5.1
+ * @version 3.0.0
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -140,14 +140,14 @@ class IronMQ_Message
 class IronMQ extends IronCore
 {
 
-    protected $client_version = '1.5.1';
+    protected $client_version = '3.0.0';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
         'protocol'    => 'https',
         'host'        => 'mq-aws-us-east-1.iron.io',
         'port'        => '443',
-        'api_version' => '1',
+        'api_version' => '3',
     );
 
     const LIST_QUEUES_PER_PAGE = 30;
@@ -197,18 +197,18 @@ class IronMQ extends IronCore
      * @param int $per_page
      *        Number of queues per page
      */
-    public function getQueues($page = 0, $per_page = self::LIST_QUEUES_PER_PAGE)
+    public function getQueues($previous = NULL, $per_page = self::LIST_QUEUES_PER_PAGE)
     {
         $url = "projects/{$this->project_id}/queues";
         $params = array();
-        if ($page !== 0) {
-            $params['page'] = (int) $page;
+        if (!is_null($previous)) {
+            $params['previous'] = $previous;
         }
         if ($per_page !== self::LIST_QUEUES_PER_PAGE) {
             $params['per_page'] = (int) $per_page;
         }
         $this->setJsonHeaders();
-        return self::json_decode($this->apiCall(self::GET, $url, $params));
+        return self::json_decode($this->apiCall(self::GET, $url, $params))->queues;
     }
 
     /**
@@ -223,7 +223,7 @@ class IronMQ extends IronCore
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
         $this->setJsonHeaders();
-        return self::json_decode($this->apiCall(self::GET, $url));
+        return self::json_decode($this->apiCall(self::GET, $url))->queue;
     }
 
     /**
@@ -235,9 +235,9 @@ class IronMQ extends IronCore
     public function clearQueue($queue_name)
     {
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/clear";
+        $url = "projects/{$this->project_id}/queues/$queue/messages";
         $this->setJsonHeaders();
-        return self::json_decode($this->apiCall(self::POST, $url));
+        return self::json_decode($this->apiCall(self::DELETE, $url));
     }
 
     /**
@@ -309,17 +309,31 @@ class IronMQ extends IronCore
     }
 
     /**
-     * Get multiplie messages from queue
+     * Reserve multiplie messages from queue
+     *
+     * @param string $queue_name Queue name
+     * @param int $count
+     * @param int $timeout
+     * @return array|null array of messages or null
+     * @deprecated Use reserveMessages instead
+     */
+    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
+    {
+        return $this->reserveMessages($queue_name, $count, $timeout);
+    }
+
+    /**
+     * Reserve multiplie messages from queue
      *
      * @param string $queue_name Queue name
      * @param int $count
      * @param int $timeout
      * @return array|null array of messages or null
      */
-    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
+    public function reserveMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
     {
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/messages";
+        $url = "projects/{$this->project_id}/queues/$queue/reservations";
         $params = array();
         if ($count !== 1) {
             $params['n'] = (int) $count;
@@ -328,7 +342,7 @@ class IronMQ extends IronCore
             $params['timeout'] = (int) $timeout;
         }
         $this->setJsonHeaders();
-        $response = $this->apiCall(self::GET, $url, $params);
+        $response = $this->apiCall(self::POST, $url, $params);
         $result = self::json_decode($response);
         if (count($result->messages) < 1) {
             return null;
@@ -338,15 +352,28 @@ class IronMQ extends IronCore
     }
 
     /**
-     * Get single message from queue
+     * Reserve single message from queue
+     *
+     * @param string $queue_name Queue name
+     * @param int $timeout
+     * @return mixed|null single message or null
+     * @deprecated Use reserveMessages instead
+     */
+    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
+    {
+        return $this->reserveMessage($queue_name, $timeout);
+    }
+
+    /**
+     * Reserve single message from queue
      *
      * @param string $queue_name Queue name
      * @param int $timeout
      * @return mixed|null single message or null
      */
-    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
+    public function reserveMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
     {
-        $messages = $this->getMessages($queue_name, 1, $timeout);
+        $messages = $this->reserveMessages($queue_name, 1, $timeout);
         if ($messages) {
             return $messages[0];
         } else {
@@ -365,7 +392,7 @@ class IronMQ extends IronCore
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
-        return self::json_decode($this->apiCall(self::GET, $url));
+        return self::json_decode($this->apiCall(self::GET, $url))->message;
     }
 
     /**
@@ -377,12 +404,19 @@ class IronMQ extends IronCore
      * @param $message_id
      * @return mixed
      */
-    public function deleteMessage($queue_name, $message_id)
+    public function deleteMessage($queue_name, $message_id, $reservation_id = NULL)
     {
+        $req = array(
+            "reservation_id" => $reservation_id
+        );
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
-        return $this->apiCall(self::DELETE, $url);
+        if (is_null($reservation_id)) {
+            return $this->apiCall(self::DELETE, $url);
+        } else {
+            return $this->apiCall(self::DELETE, $url, $req);
+        }
     }
 
     /**
@@ -391,16 +425,22 @@ class IronMQ extends IronCore
      * or it will be placed back on the queue.
      *
      * @param $queue_name
-     * @param $message_ids
+     * @param $messages
      * @return mixed
      */
-    public function deleteMessages($queue_name, $message_ids)
+    public function deleteMessages($queue_name, $messages)
     {
         $req = array(
             "ids" => array()
         );
-        foreach ($message_ids as $message_id) {
-            array_push($req['ids'], $message_id);
+        foreach ($messages as $message) {
+            if (is_string($message)) {
+                array_push($req['ids'], $message);
+            } else if (is_object($message)) {
+                array_push($req['ids'], array('id' => $message->id, 'reservation_id' => $message->reservation_id));
+            } else if (is_array($message)) {
+                array_push($req['ids'], array('id' => $message['id'], 'reservation_id' => $message['reservation_id']));
+            }
         }
         $this->setCommonHeaders();
         $queue = rawurlencode($queue_name);
@@ -437,7 +477,7 @@ class IronMQ extends IronCore
     public function peekMessages($queue_name, $count)
     {
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/messages/peek";
+        $url = "projects/{$this->project_id}/queues/$queue/messages";
         $params = array();
         if ($count !== 1) {
             $params['n'] = (int) $count;
@@ -456,12 +496,15 @@ class IronMQ extends IronCore
      * @param string $message_id
      * @return mixed
      */
-    public function touchMessage($queue_name, $message_id)
+    public function touchMessage($queue_name, $message_id, $reservation_id)
     {
+        $req = array(
+            "reservation_id" => $reservation_id
+        );
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/touch";
-        return self::json_decode($this->apiCall(self::POST, $url));
+        return self::json_decode($this->apiCall(self::POST, $url, $req));
     }
 
     /**
@@ -475,13 +518,16 @@ class IronMQ extends IronCore
      *                   Default is 0 seconds. Maximum is 604,800 seconds (7 days).
      * @return mixed
      */
-    public function releaseMessage($queue_name, $message_id, $delay = 0)
+    public function releaseMessage($queue_name, $message_id, $delay, $reservation_id)
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $params = array();
         if ($delay !== 0) {
             $params['delay'] = (int) $delay;
+        }
+        if (!is_null($reservation_id)) {
+            $params['reservation_id'] = $reservation_id;
         }
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/release";
         return self::json_decode($this->apiCall(self::POST, $url, $params));
@@ -498,11 +544,13 @@ class IronMQ extends IronCore
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/alerts";
+        $url = "projects/{$this->project_id}/queues/$queue";
         $options = array(
-            'alerts' => $alerts_hash
+            'queue' => array(
+                'alerts' => $alerts_hash
+            )
         );
-        return self::json_decode($this->apiCall(self::POST, $url, $options));
+        return self::json_decode($this->apiCall(self::PUT, $url, $options));
     }
 
     /**
@@ -514,13 +562,7 @@ class IronMQ extends IronCore
      */
     public function updateAlerts($queue_name, $alerts_hash)
     {
-        $this->setJsonHeaders();
-        $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/alerts";
-        $options = array(
-            'alerts' => $alerts_hash
-        );
-        return self::json_decode($this->apiCall(self::PUT, $url, $options));
+        return $this->addAlerts($queue_name, $alerts_hash);
     }
 
     /**
@@ -529,6 +571,7 @@ class IronMQ extends IronCore
      * @param string $queue_name
      * @param array $alerts_ids
      * @return mixed
+     * @deprecated
      */
     public function deleteAlerts($queue_name, $alerts_ids)
     {
@@ -548,6 +591,7 @@ class IronMQ extends IronCore
      * @param string $queue_name
      * @param string $alert_id
      * @return mixed
+     * @deprecated
      */
     public function deleteAlertById($queue_name, $alert_id)
     {
@@ -578,17 +622,27 @@ class IronMQ extends IronCore
      *
      * @param string $queue_name
      * @param array $options Parameters to change. keys:
-     * - "subscribers" url's to subscribe to
-     * - "push_type" multicast (default) or unicast.
-     * - "retries" Number of retries. 3 by default
-     * - "retries_delay" Delay between retries. 60 (seconds) by default
      */
     public function updateQueue($queue_name, $options)
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue";
-        return self::json_decode($this->apiCall(self::POST, $url, $options));
+        return self::json_decode($this->apiCall(self::PATCH, $url, $options));
+    }
+
+    /**
+     * Creates a queue
+     *
+     * @param string $queue_name
+     * @param array $options Parameters to change. keys:
+     */
+    public function createQueue($queue_name, $options)
+    {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue";
+        return self::json_decode($this->apiCall(self::PUT, $url, $options));
     }
 
     /**
