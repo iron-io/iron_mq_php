@@ -127,6 +127,15 @@ Reserve multiple messages in one API call:
 $ironmq->reserveMessages($queue_name, 3);
 ```
 
+Reservation Id is needed for operations like delete, touch or release a message. It could be obtained from
+message model after reserving it:
+
+```php
+<?php
+$message = $ironmq->reserveMessage($queue_name);
+$reservation_id = $message->reservation_id;
+```
+
 --
 
 ### Delete a Message from the Queue
