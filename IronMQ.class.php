@@ -720,7 +720,7 @@ class IronMQ extends IronCore
      */
     public function removeSubscriber($queue_name, $subscriber_hash)
     {
-        $this -> replaceSubscribers($queue_name, $subscriber_hash);
+        $this -> removeSubscribers($queue_name, array($subscriber_hash));
     }
 
     /**
@@ -735,7 +735,7 @@ class IronMQ extends IronCore
      * @param array $subscriber_hash Subscriber. keys:
      * - "url" Subscriber url
      * @return mixed
-     * @deprecated 
+     *
      */
     public function removeSubscribers($queue_name, $subscriber_hash)
     {

@@ -467,8 +467,7 @@ See below for example json.
 
 ### Update Queue Information
 
-Same as create queue
-A push queue couldn't be changed into a pull queue, so vice versa too.
+Same as create queue. A push queue couldn't be changed into a pull queue, so vice versa too.
 
 ### Add/Remove Subscribers on a Queue
 
