@@ -102,7 +102,7 @@ var_dump($res);
 $ironmq->postMessage("test_queue_aler", "Test Message 1");
 $res = $ironmq->getQueue("test_queue_aler");
 var_dump($res);
-$res = $ironmq->addAlerts("test_queue_aler", array(array('type' => 'progressive', 'direction' => 'asc', 'trigger' =>  200, 'queue' => 'ddd')));
+$res = $ironmq->addAlerts("test_queue_aler", array(array('type' => 'progressive', 'direction' => 'asc', 'trigger' => 200, 'queue' => 'ddd')));
 var_dump($res);
 $res = $ironmq->getQueue("test_queue_aler");
 var_dump($res);
@@ -116,11 +116,23 @@ $res = $ironmq->createQueue("test_queue_c", array('message_expiration' => 600333
 var_dump($res);
 
 $ironmq->deleteQueue("test_queue_push");
-$res = $ironmq->createQueue("test_queue_push", array('type' => 'multicast', 'push' => array('subscribers' => array(array('url' => 'http://localhost:3000/test')))));
+$res = $ironmq->createQueue("test_queue_push", array('type' => 'multicast', 'push' => array('subscribers' => array(array('url' => 'http://localhost:3000/test', 'name' => 'subscriber_name')))));
 var_dump($res);
-$res = $ironmq->updateSubscribers("test_queue_push", 
-	array(
-		array('url' => 'http://localhost:3000/test2'), 
-		array('url' => 'http://localhost:3000/test3')
-	));
+$res = $ironmq->addSubscribers("test_queue_push",
+    array(
+        array('url' => 'http://localhost:3000/test2', 'name' => 'first'),
+        array('url' => 'http://localhost:3000/test3', 'name' => 'second')
+    ));
 var_dump($res);
+$res = $ironmq->replaceSubscribers("test_queue_push",
+    array(
+        array('url' => 'https://first.replace.com', 'name' => 'replace.first'),
+        array('url' => 'https://second.replace.com', 'name' => 'replace.second')
+    )
+);
+var_dump($res);
+$res = $ironmq->removeSubscriber("test_queue_push", array(
+        "name" => "replace.first"
+    )
+);
+var_dump($ironmq->getQueue("test_queue_push"));
