@@ -424,52 +424,123 @@ $ironmq->deleteAlerts("test_alert_queue");
 IronMQ push queues allow you to setup a queue that will push to an endpoint, rather than having to poll the endpoint. 
 [Here's the announcement for an overview](http://blog.iron.io/2013/01/ironmq-push-queues-reliable-message.html). 
 
-### Update a Message Queue
+### Create a Queue
 
 ```php
 <?php
 $params = array(
-    "type" => "multicast",
+    "message_timeout" => 120,
+    "message_expiration" => 24 * 3600,
     "push" => array(
-        "retries" => 5,
         "subscribers" => array(
-            array("url" => "http://your.first.cool.endpoint.com/push"),
-            array("url" => "http://your.second.cool.endpoint.com/push")
+            array("url" => "http://your.first.cool.endpoint.com/push", "name" => "first"),
+            array("url" => "http://your.second.cool.endpoint.com/push", "name" => "second")
         ),
-        "error_queue" => "my_error_queue_name")
+        "retries" => 4,
+        "retries_delay" => 30,
+        "error_queue" => "error_queue_name"
     )
 );
 
-$ironmq->updateQueue($queue_name, $params);
+$ironmq -> createQueue($queue_name, $params);
 ```
+
+
+**Options:**
+
+* `type`: String or symbol. Queue type. `:pull`, `:multicast`, `:unicast`. Field required and static.
+* `message_timeout`: Integer. Number of seconds before message back to queue if it will not be deleted or touched.
+* `message_expiration`: Integer. Number of seconds between message post to queue and before message will be expired.
 
 **The following parameters are all related to Push Queues:**
 
-* `subscribers`: An array of subscriber hashes containing a “url” field.
+* `push: subscribers`: An array of subscriber hashes containing a `name` and a `url` required fields,
+and optional `headers` hash. `headers`'s keys are names and values are means of HTTP headers.
 This set of subscribers will replace the existing subscribers.
 To add or remove subscribers, see the add subscribers endpoint or the remove subscribers endpoint.
 See below for example json.
-* `push_type`: Either `multicast` to push to all subscribers or `unicast` to push to one and only one subscriber. Default is `multicast`.
-* `retries`: How many times to retry on failure. Default is 3. Maximum is 100.
-* `retries_delay`: Delay between each retry in seconds. Default is 60.
-* `error_queue`: The name of another queue where information about messages that can't be delivered after retrying retries number of times will be placed. Pass in an empty string to disable error queues. Default is disabled. see: [http://dev.iron.io/mq/reference/push_queues/#error_queues](http://dev.iron.io/mq/reference/push_queues/#error_queues)
+* `push: retries`: How many times to retry on failure. Default is 3. Maximum is 100.
+* `push: retries_delay`: Delay between each retry in seconds. Default is 60.
+* `push: error_queue`: String. Queue name to post push errors to.
 
 --
+
+### Update Queue Information
+
+Same as create queue
+A push queue couldn't be changed into a pull queue, so vice versa too.
 
 ### Add/Remove Subscribers on a Queue
 
-Add subscriber to Push Queue:
+Add subscribers to Push Queue:
 
 ```php
 <?php
-$res = $ironmq->updateSubscribers("test_push_queue", 
-    array(
-        array('url' => 'http://localhost:3000/test2'), 
-        array('url' => 'http://localhost:3000/test3')
-    ));
+
+$ironmq -> addSubscriber($queue_name, array(
+       "url" => "http://cool.remote.endpoint.com/push",
+       "name" => "subscriber_name",
+       "headers" => array(
+          "Content-Type" => "application/json"
+       )
+   )
+);
+
+$ironmq->addSubscribers($queue_name, array(
+        array(
+            "url" => "http://first.remote.endpoint.com/push",
+            "name" => "first"),
+        array(
+            "url" => "http://second.remote.endpoint.com/push",
+            "name" => "second")
+    )
+);
 ```
 
 --
+
+### Replace Subscribers on a Queue
+
+Sets list of subscribers to a queue. Older subscribers will be removed.
+
+```php
+<?php
+
+$ironmq -> replaceSubscriber($queue_name, array(
+       "url" => "http://cool.remote.endpoint.com/push",
+       "name" => "subscriber_name"
+   )
+);
+
+$ironmq->addSubscribers($queue_name, array(
+        array(
+            "url" => "http://first.remote.endpoint.com/push",
+            "name" => "first"),
+        array(
+            "url" => "http://second.remote.endpoint.com/push",
+            "name" => "second")
+    )
+);
+```
+
+### Remove Subscribers from a Queue
+
+Remove subscriber from a queue. This is for Push Queues only.
+
+```php
+<?php
+
+$ironmq -> removeSubscriber($queue_name, array(
+       "name" => "subscriber_name"
+   )
+);
+
+$ironmq -> removeSubscribers($queue_name, array(
+        array("name" => "first"),
+        array("name" => "second")
+    )
+);
+```
 
 ### Get Message Push Status
 

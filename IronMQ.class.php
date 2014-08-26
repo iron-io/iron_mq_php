@@ -638,6 +638,25 @@ class IronMQ extends IronCore
         return self::json_decode($this->apiCall(self::PUT, $url, array('queue' => $options)));
     }
 
+
+    /**
+     * @param $queue_name
+     * @param $subscribers_hash - Array of subscribers. keys:
+     * - "url" Subscriber url
+     * - "name" Name of subscriber
+     * @return mixed
+     */
+    public function addSubscribers($queue_name, $subscribers_hash)
+    {
+        $this->setJsonHeaders();
+        $queue = rawurlencode($queue_name);
+        $url = "projects/{$this->project_id}/queues/$queue/subscribers";
+        $options = array(
+            'subscribers' => $subscribers_hash
+        );
+        return self::json_decode($this->apiCall(self::POST, $url, $options));
+    }
+
     /**
      * Add Subscriber to a Queue
      *
@@ -649,51 +668,63 @@ class IronMQ extends IronCore
      * @param string $queue_name
      * @param array $subscriber_hash Subscriber. keys:
      * - "url" Subscriber url
+     * - "name" Name of subscriber
      * @return mixed
-     * @deprecated use updateSubscribers instead
      */
     public function addSubscriber($queue_name, $subscriber_hash)
+    {
+        return $this -> addSubscribers($queue_name, array($subscriber_hash));
+    }
+
+    /**
+     * Replace old Subscribers with new ones, Older subscribers will be removed.
+     *
+     * @param $queue_name
+     * @param $subscribers_hash - Array of subscribers. keys:
+     * - "url" Subscriber url
+     * - "name" Name of subscriber
+     * @return mixed
+     */
+    public function replaceSubscribers($queue_name, $subscribers_hash)
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/subscribers";
         $options = array(
-            'subscribers' => array($subscriber_hash)
+            'subscribers' => $subscribers_hash
         );
-        return self::json_decode($this->apiCall(self::POST, $url, $options));
+        return self::json_decode($this->apiCall(self::PUT, $url, $options));
     }
 
     /**
-     * Update Subscribers of a Queue
+     * Replace Subscribers with a new subscriber
      *
-     * Example:
-     * <code>
-     * $ironmq->updateSubscribers("test_queue", array(array("url" => "http://example.com"), ... ));
-     * </code>
-     *
-     * @param string $queue_name
-     * @param array $subscribers Array of subscribers. keys:
+     * @param $queue_name
+     * @param array $subscriber_hash Subscriber. keys:
      * - "url" Subscriber url
-     * - "name" Name of subscriber 
-     * @return mixed
+     * - "name" Name of subscriber
      */
-    public function updateSubscribers($queue_name, $subscribers)
+    public function replaceSubscriber($queue_name, $subsriber_hash)
     {
-        $this->setJsonHeaders();
-        $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue";
-        $options = array(
-            'queue' => array(
-                'push' => array(
-                    'subscribers' => $subscribers
-                )
-            )
-        );
-        return self::json_decode($this->apiCall(self::PATCH, $url, $options));
+        $this -> replaceSubscribers($queue_name, array($subsriber_hash));
     }
+
 
     /**
      * Remove Subscriber from a Queue
+     *
+     * @param $queue_name
+     * @param array $subscriber_hash Subscriber. keys:
+     * - "url" Subscriber url
+     * - "name" Name of subscriber
+     */
+    public function removeSubscriber($queue_name, $subscriber_hash)
+    {
+        $this -> replaceSubscribers($queue_name, $subscriber_hash);
+    }
+
+    /**
+     * Remove Subscribers from a Queue
      *
      * Example:
      * <code>
@@ -706,13 +737,13 @@ class IronMQ extends IronCore
      * @return mixed
      * @deprecated 
      */
-    public function removeSubscriber($queue_name, $subscriber_hash)
+    public function removeSubscribers($queue_name, $subscriber_hash)
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/subscribers";
         $options = array(
-            'subscribers' => array($subscriber_hash)
+            'subscribers' => $subscriber_hash
         );
         return self::json_decode($this->apiCall(self::DELETE, $url, $options));
     }
