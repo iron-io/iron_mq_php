@@ -266,7 +266,7 @@ class IronMQ extends IronCore
         $req = array(
             "messages" => array($msg->asArray())
         );
-        $this->setCommonHeaders();
+        $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $res = $this->apiCall(self::POST, $url, $req);
@@ -301,7 +301,7 @@ class IronMQ extends IronCore
             $msg = new IronMQ_Message($message, $properties);
             array_push($req['messages'], $msg->asArray());
         }
-        $this->setCommonHeaders();
+        $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $res = $this->apiCall(self::POST, $url, $req);
@@ -389,7 +389,7 @@ class IronMQ extends IronCore
      */
     public function getMessageById($queue_name, $message_id)
     {
-        $this->setCommonHeaders();
+        $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
         return self::json_decode($this->apiCall(self::GET, $url))->message;
@@ -409,7 +409,7 @@ class IronMQ extends IronCore
         $req = array(
             "reservation_id" => $reservation_id
         );
-        $this->setCommonHeaders();
+        $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
         if (is_null($reservation_id)) {
@@ -442,7 +442,7 @@ class IronMQ extends IronCore
                 array_push($req['ids'], array('id' => $message['id'], 'reservation_id' => $message['reservation_id']));
             }
         }
-        $this->setCommonHeaders();
+        $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
         $result = $this->apiCall(self::DELETE, $url, $req);
@@ -796,6 +796,8 @@ class IronMQ extends IronCore
     private function setJsonHeaders()
     {
         $this->setCommonHeaders();
+        $token = $this->use_keystone ? $this->getToken(): $this->token;
+        $this->headers['Authorization'] ="OAuth {$token}";
     }
 
     private function setPostHeaders()
