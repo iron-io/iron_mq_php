@@ -78,6 +78,38 @@ pass zero arguments to constructor and library will try to find config file in f
 
 --
 
+### Keystone Authentication
+
+#### Via Configuration File
+
+Add `keystone` section to your iron.json file:
+
+```javascript
+{
+  "project_id": "57a7b7b35e8e331d45000001",
+  "keystone": {
+    "server": "http://your.keystone.host/v2.0/",
+    "tenant": "some-group",
+    "username": "name",
+    "password": "password"
+  }
+}
+```
+
+#### In Code
+
+```php
+$keystone = array(
+    "server" => "http://your.keystone.host/v2.0/",
+    "tenant" => "some-gorup",
+    "username" => "name",
+    "password" => "password"
+);
+$ironmq = new IronMQ(array(
+    "project_id" => '57a7b7b35e8e331d45000001',
+    "keystone" => $keystone
+));
+```
 
 ## The Basics
 
