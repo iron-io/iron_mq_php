@@ -78,6 +78,38 @@ pass zero arguments to constructor and library will try to find config file in f
 
 --
 
+### Keystone Authentication
+
+#### Via Configuration File
+
+Add `keystone` section to your iron.json file:
+
+```javascript
+{
+  "project_id": "57a7b7b35e8e331d45000001",
+  "keystone": {
+    "server": "http://your.keystone.host/v2.0/",
+    "tenant": "some-group",
+    "username": "name",
+    "password": "password"
+  }
+}
+```
+
+#### In Code
+
+```php
+$keystone = array(
+    "server" => "http://your.keystone.host/v2.0/",
+    "tenant" => "some-gorup",
+    "username" => "name",
+    "password" => "password"
+);
+$ironmq = new IronMQ(array(
+    "project_id" => '57a7b7b35e8e331d45000001',
+    "keystone" => $keystone
+));
+```
 
 ## The Basics
 
@@ -305,7 +337,7 @@ $message = $ironmq->reserveMessage($queue_name, $timeout);
 
 ```php
 <?php
-$message = $ironmq->reserveMessages($queue_name, $count, $timeout);
+$message = $ironmq->reserveMessages($queue_name, $count, $timeout, $wait);
 ```
 
 **Optional parameters:**
@@ -316,6 +348,9 @@ $message = $ironmq->reserveMessages($queue_name, $count, $timeout);
 You must delete the message from the queue to ensure it does not go back onto the queue.
 If not set, value from POST is used. Default is 60 seconds. Minimum is 30 seconds.
 Maximum is 86,400 seconds (24 hours).
+
+* `$wait`: Time to long poll for messages, in seconds. Max is 30 seconds. Default 0.
+
 
 --
 
