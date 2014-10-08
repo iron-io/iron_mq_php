@@ -337,7 +337,7 @@ $message = $ironmq->reserveMessage($queue_name, $timeout);
 
 ```php
 <?php
-$message = $ironmq->reserveMessages($queue_name, $count, $timeout);
+$message = $ironmq->reserveMessages($queue_name, $count, $timeout, $wait);
 ```
 
 **Optional parameters:**
@@ -348,6 +348,9 @@ $message = $ironmq->reserveMessages($queue_name, $count, $timeout);
 You must delete the message from the queue to ensure it does not go back onto the queue.
 If not set, value from POST is used. Default is 60 seconds. Minimum is 30 seconds.
 Maximum is 86,400 seconds (24 hours).
+
+* `$wait`: Time to long poll for messages, in seconds. Max is 30 seconds. Default 0.
+
 
 --
 
