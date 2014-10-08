@@ -152,6 +152,7 @@ class IronMQ extends IronCore
 
     const LIST_QUEUES_PER_PAGE = 30;
     const GET_MESSAGE_TIMEOUT = 60;
+    const GET_MESSAGE_WAIT = 0;
 
     /**
      * @param string|array $config
@@ -317,9 +318,9 @@ class IronMQ extends IronCore
      * @return array|null array of messages or null
      * @deprecated Use reserveMessages instead
      */
-    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
+    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT, $wait = self::GET_MESSAGE_WAIT)
     {
-        return $this->reserveMessages($queue_name, $count, $timeout);
+        return $this->reserveMessages($queue_name, $count, $timeout, $wait);
     }
 
     /**
@@ -330,7 +331,7 @@ class IronMQ extends IronCore
      * @param int $timeout
      * @return array|null array of messages or null
      */
-    public function reserveMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
+    public function reserveMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT, $wait = self::GET_MESSAGE_WAIT)
     {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/reservations";
@@ -340,6 +341,9 @@ class IronMQ extends IronCore
         }
         if ($timeout !== self::GET_MESSAGE_TIMEOUT) {
             $params['timeout'] = (int) $timeout;
+        }
+        if ($wait !== self::GET_MESSAGE_WAIT) {
+            $params['wait'] = (int) $wait;
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::POST, $url, $params);
@@ -359,9 +363,9 @@ class IronMQ extends IronCore
      * @return mixed|null single message or null
      * @deprecated Use reserveMessages instead
      */
-    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
+    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT, $wait = self::GET_MESSAGE_WAIT)
     {
-        return $this->reserveMessage($queue_name, $timeout);
+        return $this->reserveMessage($queue_name, $timeout, $wait);
     }
 
     /**
@@ -371,9 +375,9 @@ class IronMQ extends IronCore
      * @param int $timeout
      * @return mixed|null single message or null
      */
-    public function reserveMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
+    public function reserveMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT, $wait = self::GET_MESSAGE_WAIT)
     {
-        $messages = $this->reserveMessages($queue_name, 1, $timeout);
+        $messages = $this->reserveMessages($queue_name, 1, $timeout, $wait);
         if ($messages) {
             return $messages[0];
         } else {
