@@ -275,14 +275,14 @@ Default is 604,800 seconds (7 days). Maximum is 2,592,000 seconds (30 days).
 
 ```php
 <?php
-$message = $ironmq->getMessage($queue_name, $timeout);
+$message = $ironmq->getMessage($queue_name, $timeout, $wait);
 ```
 
 **Multiple messages:**
 
 ```php
 <?php
-$message = $ironmq->getMessages($queue_name, $count, $timeout);
+$message = $ironmq->getMessages($queue_name, $count, $timeout, $wait);
 ```
 
 **Optional parameters:**
@@ -293,6 +293,9 @@ $message = $ironmq->getMessages($queue_name, $count, $timeout);
 You must delete the message from the queue to ensure it does not go back onto the queue.
 If not set, value from POST is used. Default is 60 seconds. Minimum is 30 seconds.
 Maximum is 86,400 seconds (24 hours).
+
+* `$wait`: Time in seconds to wait for a message to become available.
+This enables long polling. Default is 0 (does not wait), maximum is 30.
 
 --
 
@@ -405,8 +408,8 @@ $ironmq->deleteAlertById("test_alert_queue", $alert_id);
 
 ## Push Queues
 
-IronMQ push queues allow you to setup a queue that will push to an endpoint, rather than having to poll the endpoint. 
-[Here's the announcement for an overview](http://blog.iron.io/2013/01/ironmq-push-queues-reliable-message.html). 
+IronMQ push queues allow you to setup a queue that will push to an endpoint, rather than having to poll the endpoint.
+[Here's the announcement for an overview](http://blog.iron.io/2013/01/ironmq-push-queues-reliable-message.html).
 
 ### Update a Message Queue
 
