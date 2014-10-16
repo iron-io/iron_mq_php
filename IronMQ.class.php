@@ -151,7 +151,8 @@ class IronMQ extends IronCore
     );
 
     const LIST_QUEUES_PER_PAGE = 30;
-    const GET_MESSAGE_TIMEOUT = 60;
+    const GET_MESSAGE_TIMEOUT  = 60;
+    const GET_MESSAGE_WAIT     = 0;  // Seconds to wait until request finds a Message (Max is 30)
 
     /**
      * @param string|array $config
@@ -314,9 +315,10 @@ class IronMQ extends IronCore
      * @param string $queue_name Queue name
      * @param int $count
      * @param int $timeout
+     * @param int $wait
      * @return array|null array of messages or null
      */
-    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT)
+    public function getMessages($queue_name, $count = 1, $timeout = self::GET_MESSAGE_TIMEOUT, $wait = self::GET_MESSAGE_WAIT)
     {
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages";
@@ -326,6 +328,9 @@ class IronMQ extends IronCore
         }
         if ($timeout !== self::GET_MESSAGE_TIMEOUT) {
             $params['timeout'] = (int) $timeout;
+        }
+        if ($wait !== 0) {
+            $params['wait'] = (int) $wait;
         }
         $this->setJsonHeaders();
         $response = $this->apiCall(self::GET, $url, $params);
@@ -342,11 +347,12 @@ class IronMQ extends IronCore
      *
      * @param string $queue_name Queue name
      * @param int $timeout
+     * @param int $wait
      * @return mixed|null single message or null
      */
-    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT)
+    public function getMessage($queue_name, $timeout = self::GET_MESSAGE_TIMEOUT, $wait = self::GET_MESSAGE_WAIT)
     {
-        $messages = $this->getMessages($queue_name, 1, $timeout);
+        $messages = $this->getMessages($queue_name, 1, $timeout, $wait);
         if ($messages) {
             return $messages[0];
         } else {
