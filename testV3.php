@@ -8,8 +8,23 @@ $ironmq = new IronMQ(array('host' => 'localhost', 'port' => 8080, 'protocol' => 
 $ironmq->debug_enabled = true;
 $ironmq->ssl_verifypeer = false;
 
-$res = $ironmq->postMessage("test_queue", "Test Message 1");
+$q_name = "test_queue_001";
+
+$res = $ironmq->postMessage($q_name, "Test Message 1");
 var_dump($res);
+
+$msg = $ironmq->reserveMessage($q_name);
+var_dump($msg);
+
+$reservation_id = $msg->reservation_id;
+for ($i = 0; $i < 3; $i++) {
+    sleep(5);
+    $res = $ironmq->touchMessage($q_name, $msg->id, $reservation_id);
+    $reservation_id = $res->reservation_id;
+    var_dump($res);
+}
+
+exit();
 
 $res = $ironmq->clearQueue("test_queue");
 var_dump($res);
