@@ -800,7 +800,7 @@ class IronMQ extends IronCore
     private function setJsonHeaders()
     {
         $this->setCommonHeaders();
-        $token = $this->use_keystone ? $this->getToken(): $this->token;
+        $token = isset($this->use_keystone) && $this->use_keystone ? $this->getToken(): $this->token;
         $this->headers['Authorization'] ="OAuth {$token}";
     }
 
