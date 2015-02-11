@@ -2,7 +2,11 @@
     "name": "iron-io/iron_mq",
     "type": "library",
     "description": "Client binding for IronMQ (hosted message queue)",
-    "keywords": ["mq","iron_mq","iron"],
+    "keywords": [
+        "mq",
+        "iron_mq",
+        "iron"
+    ],
     "homepage": "http://github.com/iron-io/iron_mq_php",
     "license": "MIT",
     "authors": [
@@ -11,19 +15,25 @@
             "email": "alexander@iron.io",
             "homepage": "http://iron.io",
             "role": "Developer"
+        },
+        {
+            "name": "Tino Ehrich",
+            "email": "tino@bigpun.me"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/fightbulc/iron_core_php"
         }
     ],
     "require": {
         "php": ">=5.2.0",
-        "iron-io/iron_core": "*"
+        "iron-io/iron_core": "dev-master"
     },
     "autoload": {
-        "files": ["IronMQ.class.php"]
-    },
-    "repositories":[
-        {
-            "type":"git",
-            "url":"http://github.com/iron-io/iron_mq_php"
+        "psr-4": {
+            "IronMQ\\": "src/"
         }
-    ]
+    }
 }
