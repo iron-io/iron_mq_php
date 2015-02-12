@@ -6,6 +6,14 @@ IronMQ PHP Client Library
 The [full API documentation is here](http://dev.iron.io/mq/reference/api/) and this client tries to stick to the API as
 much as possible so if you see an option in the API docs, you can use it in the methods below.
 
+## Update notes
+
+* 1.3.0 - changed argument list in methods `postMessage` and `postMessages`. Please revise code that uses these methods.
+* 1.4.5 - added `getMessagePushStatuses` and `deleteMessagePushStatus` methods.
+* 2.0.0 - version 2.0 introduced some backward incompatible changes. IronMQ client finally PSR-4 compatible and using namespaces & other php 5.3 stuff. If you're migrating from previous (1.x) version, please carefully check how iron_mq / iron_core classes loaded.
+If you need some 1.x features like `.phar` archives, use latest 1.x stable version: https://github.com/iron-io/iron_mq_php/releases/tag/1.5.3
+
+
 ## Getting Started
 
 ### Get credentials
@@ -21,28 +29,44 @@ To start using iron_mq_php, you need to sign up and get an oauth token.
 
 There are two ways to use iron_mq_php:
 
-##### Using precompiled phar archive
+##### Using composer
 
-Copy `iron_mq.phar` to target directory and include it:
+Create `composer.json` file in project directory:
 
-```php
-<?php
-require_once "phar://iron_mq.phar";
+```json
+{
+    "require": {
+        "iron-io/iron_mq": "2.*"
+    }
+}
 ```
 
-Please note, [phar](http://php.net/manual/en/book.phar.php) extension available by default only from php 5.3.0
-For php 5.2 you should install phar manually or use second option.
+Do `composer install` (install it if needed: https://getcomposer.org/download/)
 
-##### Using classes directly
-
-1. Copy `IronMQ.class.php` to target directory
-2. Grab `IronCore.class.php` [there](https://github.com/iron-io/iron_core_php) and copy to target directory
-3. Include both of them:
+And use it:
 
 ```php
-<?php
-require_once "IronCore.class.php"
-require_once "IronMQ.class.php"
+require __DIR__ . '/vendor/autoload.php';
+
+$ironmq = new \IronMQ\IronMQ();
+```
+
+
+##### Using classes directly (strongly not recommended)
+
+1. Copy classes from `src` to target directory
+2. Grab IronCore classes [there](https://github.com/iron-io/iron_core_php) and copy to target directory
+3. Include them all.
+
+```php
+require 'src/HttpException.php';
+require 'src/IronCore.php';
+require 'src/IronMQ.php';
+require 'src/IronMQException.php';
+require 'src/IronMQMessage.php';
+require 'src/JsonException.php';
+
+$ironmq = new \IronMQ\IronMQ();
 ```
 
 --
@@ -55,16 +79,16 @@ Three ways to configure IronMQ:
 
 ```php
 <?php
-$ironmq = new IronMQ(array(
+$ironmq = new \IronMQ\IronMQ(array(
     "token" => 'XXXXXXXXX',
     "project_id" => 'XXXXXXXXX'
 ));
 ```
-* Passing ini file name which stores your configuration options. Rename sample_config.ini to config.ini and include your Iron.io credentials (`token` and `project_id`):
+* Passing json (or ini) file name which stores your configuration options (usually `token` and `project_id`):
 
 ```php
 <?php
-$ironmq = new IronMQ('config.ini');
+$ironmq = new \IronMQ\IronMQ('iron.json');
 ```
 
 * Automatic [config](http://dev.iron.io/mq/reference/configuration/) search -
@@ -167,14 +191,6 @@ There are two ways to fix this error:
 curl.cainfo = "path\to\cacert.pem"
 ```
 
-
---
-
-### Updating notes
-
-* 1.3.0 - changed argument list in methods `postMessage` and `postMessages`. Please revise code that uses these methods.
-* 1.4.5 - added `getMessagePushStatuses` and `deleteMessagePushStatus` methods.
-
 --
 
 
@@ -186,7 +202,7 @@ curl.cainfo = "path\to\cacert.pem"
 
 ```php
 <?php
-$ironmq = new IronMQ(array(
+$ironmq = new \IronMQ\IronMQ(array(
     "token" => 'XXXXXXXXX',
     "project_id" => 'XXXXXXXXX'
 ));

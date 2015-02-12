@@ -11,13 +11,13 @@ use IronCore\IronCore;
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 1.5.2
+ * @version 2.0.0
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
 class IronMQ extends IronCore
 {
-    protected $client_version = '1.5.2';
+    protected $client_version = '2.0.0';
     protected $client_name = 'iron_mq_php';
     protected $product_name = 'iron_mq';
     protected $default_values = array(
