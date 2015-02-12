@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=5.2.0",
-        "iron-io/iron_core": "*"
+        "iron-io/iron_core": "0.*"
     },
     "autoload": {
         "files": ["IronMQ.class.php"]
