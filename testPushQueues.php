@@ -1,18 +1,17 @@
 <?php
 
 #require("phar://iron_mq.phar");
-require("../iron_core_php/IronCore.class.php");
-require("IronMQ.class.php");
+require __DIR__ . '/vendor/autoload.php';
 
-$ironmq = new IronMQ();
+$ironmq = new \IronMQ\IronMQ();
 #$ironmq->debug_enabled = true;
 $ironmq->ssl_verifypeer = false;
 
-
-$queue_name = "push-queue-".rand(0, 100);
+$queue_name = "push-queue-" . rand(0, 100);
 
 $subscribers = array();
-for ($i = 0; $i < 5; $i++) {
+for ($i = 0; $i < 5; $i++)
+{
     $subscribers[$i] = array(
         'url' => "http://rest-test.iron.io/code/200?store=$queue_name-$i"
     );
@@ -22,12 +21,12 @@ for ($i = 0; $i < 5; $i++) {
 # enable push queue
 $res = $ironmq->updateQueue($queue_name, array(
     'subscribers' => $subscribers,
-    'push_type' => "unicast"
+    'push_type'   => "unicast"
 ));
 #print_r($res);
 
 $res = $ironmq->getQueue($queue_name);
-echo "Queue enabled, ".count($res->subscribers)." subscribers\n";
+echo "Queue enabled, " . count($res->subscribers) . " subscribers\n";
 
 # Add one more subscriber
 $res = $ironmq->addSubscriber($queue_name, array('url' => 'http://example.com'));
@@ -35,12 +34,13 @@ $res = $ironmq->addSubscriber($queue_name, array('url' => 'http://example.com'))
 
 
 $res = $ironmq->getQueue($queue_name);
-echo "Added subscriver, ".count($res->subscribers)." subscribers\n";
+echo "Added subscriver, " . count($res->subscribers) . " subscribers\n";
 
 $subscribers = $res->subscribers;
 # Remove all subscribers
-foreach ($subscribers as $subscriber) {
-    echo "- ".$subscriber->url."\n";
+foreach ($subscribers as $subscriber)
+{
+    echo "- " . $subscriber->url . "\n";
     $ironmq->removeSubscriber($queue_name, array('url' => $subscriber->url));
 }
 
