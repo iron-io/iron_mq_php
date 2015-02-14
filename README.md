@@ -6,6 +6,17 @@ IronMQ PHP Client Library
 The [full API documentation is here](http://dev.iron.io/mq/reference/api/) and this client tries to stick to the API as
 much as possible so if you see an option in the API docs, you can use it in the methods below.
 
+
+## Branches
+
+**If you're using laravel and see `"Class IronMQ not found"` error set `iron_mq` version to `1.*` and install dependencies**
+
+* `1.*` - laravel-compatible, php-5.2-compatible version. No namespaces. Using default IronMQ servers.
+* `2.*` - PSR-4 compatible version with namespaces. Using default IronMQ servers. If you're not using laravel stick with it.
+* `3.*` - Special version for IronMQ API v3. Different API, different server endpoints. Go with it if you're using [IronMQ on-premise](http://dev.iron.io/mq-onpremise/)
+* `master` branch - same as `2.*`
+
+
 ## Update notes
 
 * 1.3.0 - changed argument list in methods `postMessage` and `postMessages`. Please revise code that uses these methods.
