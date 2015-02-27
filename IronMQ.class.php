@@ -776,11 +776,11 @@ class IronMQ extends IronCore
     }
 
     /**
-     * Delete Message's Push Status (for Push Queues only)
+     * Delete Push Message (for Push Queues only)
      *
      * Example:
      * <code>
-     * $ironmq->deleteMessagePushStatus("test_queue", $message_id, $reservation_id, $subscriber_name)
+     * $ironmq->deletePushMessage("test_queue", $message_id, $reservation_id, $subscriber_name)
      * </code>
      *
      * @param string $queue_name
@@ -789,11 +789,11 @@ class IronMQ extends IronCore
      * @param string $subscriber_name
      * @return mixed
      */
-    public function deleteMessagePushStatus($queue_name, $message_id, $reservation_id, $subscriber_name)
+    public function deletePushMessage($queue_name, $message_id, $reservation_id, $subscriber_name)
     {
         $req = array(
-            'reservation_id': $reservation_id,
-            'subscriber_name': $subscriber_name
+            'reservation_id' => $reservation_id,
+            'subscriber_name' => $subscriber_name
         );
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);

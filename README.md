@@ -598,7 +598,7 @@ on long-processing for further information.
 
 ```php
 <?php
-$ironmq->deleteMessagePushStatus($queue_name, $message_id, $reservation_id, $subscriber_name);
+$ironmq->deletePushMessage($queue_name, $message_id, $reservation_id, $subscriber_name);
 ```
 
 --
