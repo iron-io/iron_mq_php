@@ -356,11 +356,11 @@ Maximum is 86,400 seconds (24 hours).
 
 ### Touch a Message on a Queue
 
-Touching a reserved message extends its timeout by the duration specified when the message was created, which is 60 seconds by default.
+Touching a reserved message returns new reservation with specified or default timeout.
 
 ```php
 <?php
-$ironmq->touchMessage($queue_name, $message_id, $reservation_id);
+$ironmq->touchMessage($queue_name, $message_id, $reservation_id, $timeout);
 ```
 
 --
@@ -369,7 +369,7 @@ $ironmq->touchMessage($queue_name, $message_id, $reservation_id);
 
 ```php
 <?php
-$ironmq->releaseMessage($queue_name, $message_id, $delay, $reservation_id);
+$ironmq->releaseMessage($queue_name, $message_id, $reservation_id, $delay);
 ```
 
 **Parameters:**
@@ -590,15 +590,15 @@ Returns an array of subscribers with status.
 
 --
 
-### Acknowledge / Delete Message Push Status
+### Acknowledge, That Push Message Is Processed
+
+This method could be used to acknowledgement process of push messages.
+See [IronMQ v3 documentation](http://dev.iron.io/mq-onpremise/reference/push_queues/#long_running_processes__aka_202s)
+on long-processing for further information.
 
 ```php
 <?php
-$statuses = $ironmq->getMessagePushStatuses($queue_name, $message_id);
-
-foreach ($statuses as $status) {
-    $ironmq->deleteMessagePushStatus($queue_name, $message_id, $status["id"]);
-}
+$ironmq->deletePushMessage($queue_name, $message_id, $reservation_id, $subscriber_name);
 ```
 
 --

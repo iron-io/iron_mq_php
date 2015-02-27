@@ -498,13 +498,17 @@ class IronMQ extends IronCore
      *
      * @param string $queue_name
      * @param string $message_id
+     * @param int $timeout
      * @return mixed
      */
-    public function touchMessage($queue_name, $message_id, $reservation_id)
+    public function touchMessage($queue_name, $message_id, $reservation_id, $timeout)
     {
         $req = array(
             "reservation_id" => $reservation_id
         );
+        if ($timeout !== 0) {
+            $req['timeout'] = (int) $timeout;
+        }
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/touch";
@@ -518,20 +522,18 @@ class IronMQ extends IronCore
      *
      * @param string $queue_name
      * @param string $message_id
+     * @param string $reservation_id
      * @param int $delay The item will not be available on the queue until this many seconds have passed.
      *                   Default is 0 seconds. Maximum is 604,800 seconds (7 days).
      * @return mixed
      */
-    public function releaseMessage($queue_name, $message_id, $delay, $reservation_id)
+    public function releaseMessage($queue_name, $message_id, $reservation_id, $delay)
     {
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
-        $params = array();
+        $params = array('reservation_id' => $reservation_id);
         if ($delay !== 0) {
             $params['delay'] = (int) $delay;
-        }
-        if (!is_null($reservation_id)) {
-            $params['reservation_id'] = $reservation_id;
         }
         $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/release";
         return self::json_decode($this->apiCall(self::POST, $url, $params));
@@ -774,24 +776,29 @@ class IronMQ extends IronCore
     }
 
     /**
-     * Delete Message's Push Status (for Push Queues only)
+     * Delete Push Message (for Push Queues only)
      *
      * Example:
      * <code>
-     * $ironmq->deleteMessagePushStatus("test_queue", $message_id, $subscription_id)
+     * $ironmq->deletePushMessage("test_queue", $message_id, $reservation_id, $subscriber_name)
      * </code>
      *
      * @param string $queue_name
      * @param string $message_id
-     * @param string $subscription_id
+     * @param string $reservation_id
+     * @param string $subscriber_name
      * @return mixed
      */
-    public function deleteMessagePushStatus($queue_name, $message_id, $subscription_id)
+    public function deletePushMessage($queue_name, $message_id, $reservation_id, $subscriber_name)
     {
+        $req = array(
+            'reservation_id' => $reservation_id,
+            'subscriber_name' => $subscriber_name
+        );
         $this->setJsonHeaders();
         $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}/subscribers/{$subscription_id}";
-        return self::json_decode($this->apiCall(self::DELETE, $url));
+        $url = "projects/{$this->project_id}/queues/$queue/messages/{$message_id}";
+        return self::json_decode($this->apiCall(self::DELETE, $url, $req));
     }
 
 
