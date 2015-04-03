@@ -160,7 +160,7 @@ Get multiple messages in one API call:
 
 ```php
 <?php
-$ironmq->getMessage($queue_name, 3);
+$ironmq->getMessages($queue_name, 3);
 ```
 
 --
