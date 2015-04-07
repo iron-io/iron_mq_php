@@ -1,14 +1,14 @@
 <?php
 
 #require("phar://iron_mq.phar");
-require __DIR__ . '/vendor/autoload.php';
+require("../iron_core_php/IronCore.class.php");
+require("IronMQ.class.php");
 
-$ironmq = new \IronMQ\IronMQ();
+$ironmq = new IronMQ();
 #$ironmq->debug_enabled = true;
 $ironmq->ssl_verifypeer = false;
 
-for ($i = 0; $i < 10; $i++)
-{
+for ($i = 0; $i < 10; $i++) {
     echo "Post message:\n";
     $res = $ironmq->postMessage("test_queue", "Test Message $i");
     var_dump($res);
@@ -43,8 +43,7 @@ for ($i = 0; $i < 10; $i++)
     echo "Getting multiple messages..\n";
     $messageIds = array();
     $messages = $ironmq->getMessages("test-queue-multi", 2);
-    foreach ($messages as $message)
-    {
+    foreach($messages as $message){
         array_push($messageIds, $message->id);
     }
     echo "Deleting messages with ids..\n";
@@ -55,19 +54,17 @@ for ($i = 0; $i < 10; $i++)
     echo "Adding alerts..\n";
     $res = $ironmq->postMessage("test_alert_queue", "Test Message 1");
     $first_alert = array(
-        'type'      => 'fixed',
+        'type' => 'fixed',
         'direction' => 'desc',
-        'trigger'   => 1001,
-        'snooze'    => 10,
-        'queue'     => 'test_alert_queue'
-    );
+        'trigger' => 1001,
+        'snooze' => 10,
+        'queue' => 'test_alert_queue');
     $second_alert = array(
-        'type'      => 'fixed',
+        'type' => 'fixed',
         'direction' => 'asc',
-        'trigger'   => 1000,
-        'snooze'    => 5,
-        'queue'     => 'test_alert_queue',
-    );
+        'trigger' => 1000,
+        'snooze' => 5,
+        'queue' => 'test_alert_queue',);
 
     $res = $ironmq->addAlerts("test_alert_queue", array($first_alert, $second_alert));
     print_r($res);
@@ -75,10 +72,9 @@ for ($i = 0; $i < 10; $i++)
     echo "Deleting alerts with ids..\n";
     $message = $ironmq->getQueue("test_alert_queue");
     $alert_ids = array();
-    $alerts = $message->alerts;
-    foreach ($alerts as $alert)
-    {
-        array_push($alert_ids, array('id' => $alert->id));
+    $alerts = $message-> alerts;
+    foreach($alerts as $alert) {
+        array_push($alert_ids, array('id'=>$alert->id));
     }
     print_r($alert_ids);
     $res = $ironmq->deleteAlerts("test_alert_queue", $alert_ids);
