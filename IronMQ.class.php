@@ -6,7 +6,7 @@
  * @link https://github.com/iron-io/iron_mq_php
  * @link http://www.iron.io/products/mq
  * @link http://dev.iron.io/
- * @version 3.0.2
+ * @version 3.0.3
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
@@ -140,12 +140,12 @@ class IronMQ_Message
 class IronMQ extends IronCore
 {
 
-    protected $client_version = '3.0.2';
+    protected $client_version = '3.0.3';
     protected $client_name    = 'iron_mq_php';
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
         'protocol'    => 'https',
-        'host'        => 'mq-aws-us-east-1.iron.io',
+        'host'        => 'mq-aws-us-east-1-1.iron.io',
         'port'        => '443',
         'api_version' => '3',
     );
