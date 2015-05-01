@@ -15,10 +15,12 @@
     ],
     "require": {
         "php": ">=5.2.0",
-        "iron-io/iron_core": "0.*"
+        "iron-io/iron_core": "1.*"
     },
     "autoload": {
-        "files": ["IronMQ.class.php"]
+        "psr-4": {
+            "IronMQ\\": "src/"
+        }
     },
     "repositories":[
         {
