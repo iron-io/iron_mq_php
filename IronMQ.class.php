@@ -145,9 +145,9 @@ class IronMQ extends IronCore
     protected $product_name   = 'iron_mq';
     protected $default_values = array(
         'protocol'    => 'https',
-        'host'        => 'mq-aws-us-east-1-1.iron.io',
+        'host'        => 'mq-aws-us-east-1.iron.io',
         'port'        => '443',
-        'api_version' => '3',
+        'api_version' => '1',
     );
 
     const LIST_QUEUES_PER_PAGE = 30;
