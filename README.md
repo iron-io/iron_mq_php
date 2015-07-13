@@ -536,4 +536,4 @@ $ironmq->updateQueue($queue_name, $params);
 * [Live Chat, Support & Fun](http://get.iron.io/chat)
 
 -------------
-© 2011 - 2013 Iron.io Inc. All Rights Reserved.
+© 2011 - 2015 Iron.io Inc. All Rights Reserved.
