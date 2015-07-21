@@ -1,6 +1,9 @@
+composer.phar
 *.swp
-config.ini
-iron.json
+config/iron.json
+config/iron.ini
 .DS_Store
 *.esproj/
 .idea/
+vendor/
+tests/coverage/
