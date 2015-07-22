@@ -1,9 +1,12 @@
 *.swp
 config.ini
+iron.ini
 iron.json
 .DS_Store
 *.esproj/
 .idea/
 
+tests/coverage/
 vendor/
 composer.lock
+composer.phar

@@ -1,4 +1,15 @@
 <?php
+/**
+ * PHP client for IronMQ
+ * IronMQ is a scalable, reliable, high performance message queue in the cloud.
+ *
+ * @link https://github.com/iron-io/iron_mq_php
+ * @link http://www.iron.io/products/mq
+ * @link http://dev.iron.io/
+ * @version 3.0.3
+ * @package IronMQPHP
+ * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
+ */
 
 namespace IronMQ;
 
@@ -51,7 +62,7 @@ class IronMQMessage
     public function setBody($body)
     {
         if (empty($body)) {
-            throw new InvalidArgumentException("Please specify a body");
+            throw new \InvalidArgumentException("Please specify a body");
         } else {
             $this->body = (string) $body;
         }
@@ -95,7 +106,7 @@ class IronMQMessage
     public function setExpiresIn($expires_in)
     {
         if ($expires_in > self::MAX_EXPIRES_IN) {
-            throw new InvalidArgumentException("Expires In can't be greater than ".self::MAX_EXPIRES_IN.".");
+            throw new \InvalidArgumentException("Expires In can't be greater than ".self::MAX_EXPIRES_IN.".");
         } else {
             $this->expires_in = $expires_in;
         }

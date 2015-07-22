@@ -10,14 +10,15 @@
  * @package IronMQPHP
  * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
  */
+namespace IronMQTest;
 
-namespace IronMQ;
+use IronMQ\IronMQException;
 
-/**
- * IronMQException
- * @package IronMQ
- * @author Tino Ehrich (tino@bigpun.me)
- */
-class IronMQException extends \Exception
+class IronMQExceptionTest extends \PHPUnit_Framework_TestCase
 {
+    public function testIsInstanceOfException()
+    {
+        $exception = new IronMQException();
+        $this->assertTrue($exception instanceof \Exception);
+    }
 }
