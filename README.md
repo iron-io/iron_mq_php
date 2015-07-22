@@ -18,31 +18,7 @@ To start using iron_mq_php, you need to sign up and get an oauth token.
 
 ### Install iron_mq_php
 
-There are two ways to use iron_mq_php:
-
-##### Using precompiled phar archive
-
-Copy `iron_mq.phar` to target directory and include it:
-
-```php
-<?php
-require_once "phar://iron_mq.phar";
-```
-
-Please note, [phar](http://php.net/manual/en/book.phar.php) extension available by default only from php 5.3.0
-For php 5.2 you should install phar manually or use second option.
-
-##### Using classes directly
-
-1. Copy `IronMQ.class.php` to target directory
-2. Grab `IronCore.class.php` [there](https://github.com/iron-io/iron_core_php) and copy to target directory
-3. Include both of them:
-
-```php
-<?php
-require_once "IronCore.class.php"
-require_once "IronMQ.class.php"
-```
+Install it with composer.
 
 --
 
@@ -240,6 +216,8 @@ curl.cainfo = "path\to\cacert.pem"
 
 ```php
 <?php
+use IronMQ\IronMQ;
+
 $ironmq = new IronMQ(array(
     "token" => 'XXXXXXXXX',
     "project_id" => 'XXXXXXXXX'
@@ -477,7 +455,7 @@ $params = array(
     )
 );
 
-$ironmq -> createQueue($queue_name, $params);
+$ironmq->createQueue($queue_name, $params);
 ```
 
 
@@ -511,7 +489,7 @@ Add subscribers to Push Queue:
 ```php
 <?php
 
-$ironmq -> addSubscriber($queue_name, array(
+$ironmq->addSubscriber($queue_name, array(
        "url" => "http://cool.remote.endpoint.com/push",
        "name" => "subscriber_name",
        "headers" => array(
@@ -540,7 +518,7 @@ Sets list of subscribers to a queue. Older subscribers will be removed.
 ```php
 <?php
 
-$ironmq -> replaceSubscriber($queue_name, array(
+$ironmq->replaceSubscriber($queue_name, array(
        "url" => "http://cool.remote.endpoint.com/push",
        "name" => "subscriber_name"
    )
@@ -564,12 +542,12 @@ Remove subscriber from a queue. This is for Push Queues only.
 ```php
 <?php
 
-$ironmq -> removeSubscriber($queue_name, array(
+$ironmq->removeSubscriber($queue_name, array(
        "name" => "subscriber_name"
    )
 );
 
-$ironmq -> removeSubscribers($queue_name, array(
+$ironmq->removeSubscribers($queue_name, array(
         array("name" => "first"),
         array("name" => "second")
     )
