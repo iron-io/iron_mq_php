@@ -1,0 +1,13 @@
+This directory contains a few sets of code that detail how to use the IronMQ client library.
+
+To use these examples, copy the 'sample_iron.ini' file to 'iron.ini' and fill in with your details, or put a copy
+of your 'iron.json' file in this directory. The IronMQ client will automatically parse these files and use them for
+configuration.
+
+Each test will create a list of queues, and clean themselves up after running. If the test code fails for some reason,
+or you comment out the deleteQueue() commands, you can manually delete the queues from your HUD interface.
+
+You can also enable debug for IronMQ by uncommenting the line near the top of each file. This will allow you to see
+the API enpoints that are being posted to.
+
+Enjoy!

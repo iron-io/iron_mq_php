@@ -1,4 +1,15 @@
 <?php
+/**
+ * PHP client for IronMQ
+ * IronMQ is a scalable, reliable, high performance message queue in the cloud.
+ *
+ * @link https://github.com/iron-io/iron_mq_php
+ * @link http://www.iron.io/products/mq
+ * @link http://dev.iron.io/
+ * @version 3.0.3
+ * @package IronMQPHP
+ * @copyright Feel free to copy, steal, take credit for, or whatever you feel like doing with this code. ;)
+ */
 
 namespace IronMQ;
 
@@ -56,7 +67,7 @@ class IronMQ extends IronCore
      * Switch active project
      *
      * @param string $project_id Project ID
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function setProjectId($project_id)
     {
@@ -66,14 +77,14 @@ class IronMQ extends IronCore
         }
         if (empty($this->project_id))
         {
-            throw new InvalidArgumentException("Please set project_id");
+            throw new \InvalidArgumentException("Please set project_id");
         }
     }
 
     /**
      * Get list of message queues
      *
-     * @param int $page
+     * @param int $previous
      *        Zero-indexed page to view
      * @param int $per_page
      *        Number of queues per page
@@ -482,7 +493,7 @@ class IronMQ extends IronCore
      * Remove alerts from a queue. This is for Pull Queue only.
      *
      * @param string $queue_name
-     * @param array $alerts_ids
+     *
      * @return mixed
      * @deprecated
      */
@@ -528,6 +539,8 @@ class IronMQ extends IronCore
      *
      * @param string $queue_name
      * @param array $options Parameters to change. keys:
+     *
+     * @return object
      */
     public function updateQueue($queue_name, $options)
     {
@@ -542,6 +555,8 @@ class IronMQ extends IronCore
      *
      * @param string $queue_name
      * @param array $options Parameters to change. keys:
+     *
+     * @return object
      */
     public function createQueue($queue_name, $options)
     {
@@ -617,9 +632,9 @@ class IronMQ extends IronCore
      * - "url" Subscriber url
      * - "name" Name of subscriber
      */
-    public function replaceSubscriber($queue_name, $subsriber_hash)
+    public function replaceSubscriber($queue_name, $subscriber_hash)
     {
-        $this -> replaceSubscribers($queue_name, array($subsriber_hash));
+        $this -> replaceSubscribers($queue_name, array($subscriber_hash));
     }
 
 

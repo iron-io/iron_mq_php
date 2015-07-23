@@ -1,4 +1,4 @@
-IronMQ v3 PHP Client Library
+IronMQ v4 PHP Client Library
 -------------
 
 [IronMQ](http://www.iron.io/products/mq) is an elastic message queue for managing data and event flow within cloud applications and between systems.
@@ -513,7 +513,7 @@ $params = array(
     )
 );
 
-$ironmq -> createQueue($queue_name, $params);
+$ironmq->createQueue($queue_name, $params);
 ```
 
 
@@ -547,7 +547,7 @@ Add subscribers to Push Queue:
 ```php
 <?php
 
-$ironmq -> addSubscriber($queue_name, array(
+$ironmq->addSubscriber($queue_name, array(
        "url" => "http://cool.remote.endpoint.com/push",
        "name" => "subscriber_name",
        "headers" => array(
@@ -576,7 +576,7 @@ Sets list of subscribers to a queue. Older subscribers will be removed.
 ```php
 <?php
 
-$ironmq -> replaceSubscriber($queue_name, array(
+$ironmq->replaceSubscriber($queue_name, array(
        "url" => "http://cool.remote.endpoint.com/push",
        "name" => "subscriber_name"
    )
@@ -600,12 +600,12 @@ Remove subscriber from a queue. This is for Push Queues only.
 ```php
 <?php
 
-$ironmq -> removeSubscriber($queue_name, array(
+$ironmq->removeSubscriber($queue_name, array(
        "name" => "subscriber_name"
    )
 );
 
-$ironmq -> removeSubscribers($queue_name, array(
+$ironmq->removeSubscribers($queue_name, array(
         array("name" => "first"),
         array("name" => "second")
     )
