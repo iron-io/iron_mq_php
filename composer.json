@@ -21,12 +21,7 @@
             "email": "tino@bigpun.me"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/fightbulc/iron_core_php"
-        }
-    ],
+    "repositories": [],
     "require": {
         "php": ">=5.2.0",
         "iron-io/iron_core": "1.*"
