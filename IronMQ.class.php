@@ -250,9 +250,7 @@ class IronMQ extends IronCore
      * </code>
      * <code>
      * $ironmq->postMessage("test_queue", "Test Message", array(
-     *   'timeout' => 120,
-     *   'delay' => 2,
-     *   'expires_in' => 2*24*3600 # 2 days
+     *   'delay' => 2
      * ));
      * </code>
      *
@@ -282,9 +280,7 @@ class IronMQ extends IronCore
      * Example:
      * <code>
      * $ironmq->postMessages("test_queue", array("Lorem", "Ipsum"), array(
-     *   'timeout' => 120,
-     *   'delay' => 2,
-     *   'expires_in' => 2*24*3600 # 2 days
+     *   'delay' => 2
      * ));
      * </code>
      *
