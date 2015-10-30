@@ -297,8 +297,7 @@ $response = $ironmq->deleteQueue($queue_name);
 ```php
 <?php
 $ironmq->postMessage($queue_name, "Test Message", array(
-    'delay' => 2,
-    'expires_in' => 2*24*3600 # 2 days
+    'delay' => 2
 ));
 ```
 
@@ -307,8 +306,7 @@ $ironmq->postMessage($queue_name, "Test Message", array(
 ```php
 <?php
 $ironmq->postMessages($queue_name, array("Lorem", "Ipsum"), array(
-    "delay" => 2,
-    "expires_in" => 2*24*3600 # 2 days
+    "delay" => 2
 ));
 ```
 
@@ -316,11 +314,6 @@ $ironmq->postMessages($queue_name, array("Lorem", "Ipsum"), array(
 
 * `delay`: The item will not be available on the queue until this many seconds have passed.
 Default is 0 seconds. Maximum is 604,800 seconds (7 days).
-
-* `expires_in`: How long in seconds to keep the item on the queue before it is deleted.
-Default is 604,800 seconds (7 days). Maximum is 2,592,000 seconds (30 days).
-
-* ~~`timeout`~~: **Deprecated**. Can no longer set timeout when posting a message, only when reserving one.
 
 --
 
