@@ -11,9 +11,10 @@ much as possible so if you see an option in the API docs, you can use it in the 
 
 **If you're using laravel and see `"Class IronMQ not found"` error set `iron_mq` version to `1.*` and install dependencies**
 
-* `1.*` - laravel-compatible, php-5.2-compatible version. No namespaces. Using default IronMQ servers.
-* `2.*` - PSR-4 compatible version with namespaces. Using default IronMQ servers. If you're not using laravel stick with it.
-* `3.*` - Special version for IronMQ API v3. Different API, different server endpoints. Go with it if you're using [IronMQ on-premise](http://dev.iron.io/mq-onpremise/)
+* `1.*` - Laravel 4.0/4.1/4.2/5.0 compatible, PHP 5.2 compatible version. No namespaces. Using default IronMQ servers.
+* `2.*` - Laravel 5.1/5.2 compatible, PSR-4 compatible version. With namespaces. Using default IronMQ servers. If you're not using laravel 4.0-5.0 stick with it.
+* `3.*` - Special version for IronMQ API v3. Laravel 4.0/4.1/4.2/5.0 compatible, PHP 5.2 compatible version.Different API (v3), different server endpoints.
+* `4.*` - Special version for IronMQ API v3. Laravel 5.1/5.2 compatible, PSR-4 compatible version. With namespaces. Different API (v3), different server endpoints. Go with it if you're using [IronMQ on-premise](http://dev.iron.io/mq-onpremise/)
 * `master` branch - same as `2.*`
 
 
@@ -160,7 +161,7 @@ Get multiple messages in one API call:
 
 ```php
 <?php
-$ironmq->getMessage($queue_name, 3);
+$ironmq->getMessages($queue_name, 3);
 ```
 
 --
@@ -535,4 +536,4 @@ $ironmq->updateQueue($queue_name, $params);
 * [Live Chat, Support & Fun](http://get.iron.io/chat)
 
 -------------
-© 2011 - 2013 Iron.io Inc. All Rights Reserved.
+© 2011 - 2015 Iron.io Inc. All Rights Reserved.
