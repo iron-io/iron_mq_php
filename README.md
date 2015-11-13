@@ -1,9 +1,9 @@
-IronMQ v3 PHP Client Library
+IronMQ PHP Client Library
 -------------
 
 [IronMQ](http://www.iron.io/products/mq) is an elastic message queue for managing data and event flow within cloud applications and between systems.
 
-This library uses IronMQ API v3.
+This library uses IronMQ API.
 
 ## Getting Started
 
@@ -586,7 +586,7 @@ Returns an array of subscribers with status.
 ### Acknowledge, That Push Message Is Processed
 
 This method could be used to acknowledgement process of push messages.
-See [IronMQ v3 documentation](http://dev.iron.io/mq-onpremise/reference/push_queues/#long_running_processes__aka_202s)
+See [IronMQ documentation](http://dev.iron.io/mq-onpremise/reference/push_queues/#long_running_processes__aka_202s)
 on long-processing for further information.
 
 ```php
