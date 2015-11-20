@@ -13,7 +13,7 @@ This library uses IronMQ API v3.
 * `2.*` - Laravel 5.1/5.2 compatible, PSR-4 compatible version. With namespaces. Using default IronMQ servers. If you're not using laravel 4.0-5.0 stick with it.
 * `3.*` - Special version for IronMQ API v3. Laravel 4.0/4.1/4.2/5.0 compatible, PHP 5.2 compatible version.Different API (v3), different server endpoints.
 * `4.*` - Special version for IronMQ API v3. Laravel 5.1/5.2 compatible, PSR-4 compatible version. With namespaces. Different API (v3), different server endpoints. Go with it if you're using [IronMQ on-premise](http://dev.iron.io/mq-onpremise/)
-* `master` branch - same as `2.*`
+* `master` branch - same as `4.*`
 
 
 ## Update notes
