@@ -9,12 +9,11 @@ This library uses IronMQ API v3.
 
 **If you're using laravel and see `"Class IronMQ not found"` error set `iron_mq` version to `1.*` and install/update dependencies**
 
-* `1.*` - Laravel 4.0/4.1/4.2/5.0 compatible, PHP 5.2 compatible version. No namespaces. Using default IronMQ servers.
-* `2.*` - Laravel 5.1/5.2 compatible, PSR-4 compatible version. With namespaces. Using default IronMQ servers. If you're not using laravel 4.0-5.0 stick with it.
-* `3.*` - Special version for IronMQ API v3. Laravel 4.0/4.1/4.2/5.0 compatible, PHP 5.2 compatible version.Different API (v3), different server endpoints.
-* `4.*` - Special version for IronMQ API v3. Laravel 5.1/5.2 compatible, PSR-4 compatible version. With namespaces. Different API (v3), different server endpoints. Go with it if you're using [IronMQ on-premise](http://dev.iron.io/mq-onpremise/)
+* `1.*` - Laravel 4.0/4.1/4.2/5.0 compatible, PHP 5.2 compatible version. No namespaces. Using IronMQv2 servers (deprecated).
+* `2.*` - Laravel 5.1/5.2 compatible, PSR-4 compatible version. With namespaces. Using IronMQv2 servers (deprecated).
+* `3.*` - Laravel 4.0/4.1/4.2/5.0 compatible, PHP 5.2 compatible version. IronMQv3.
+* `4.*` - (recommended) Laravel 5.1/5.2 compatible, PSR-4 compatible version. With namespaces. IronMQv3. Current default.
 * `master` branch - same as `4.*`
-
 
 ## Update notes
 
