@@ -32,10 +32,10 @@ $ironMQ->createQueue($alertQueueName, array('message_expiration' => 3600));
 
 // Every 200 messages, generate an alert
 $alert = array(
-    'type' => 'progressive',
+    'type'      => 'progressive',
     'direction' => 'asc',
-    'trigger' => 200,
-    'queue' => $alertQueueName,
+    'trigger'   => 200,
+    'queue'     => $alertQueueName,
 );
 $addResponse = $ironMQ->addAlerts($queueName, array($alert));
 var_dump($addResponse);

@@ -42,7 +42,7 @@ class IronMQTest extends \PHPUnit_Framework_TestCase
     {
         $config = array(
             'project_id' => 'Project',
-            'token' => 'Token',
+            'token'      => 'Token',
         );
 
         $ironMQ = new IronMQ($config);

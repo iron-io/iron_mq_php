@@ -23,10 +23,10 @@ class IronMQMessageTest extends \PHPUnit_Framework_TestCase
     public function testConstructorSetsDataProperly()
     {
         $data = array(
-            'body' => 'This is the message body',
+            'body'       => 'This is the message body',
             'properties' => array(
-                'timeout' => 500,
-                'delay' => 450,
+                'timeout'    => 500,
+                'delay'      => 450,
                 'expires_in' => 400,
             ),
         );
@@ -129,7 +129,7 @@ class IronMQMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testLargeExpiresInThrowsException()
     {
-        $this->setExpectedException('\InvalidArgumentException', "Expires In can't be greater than ".IronMQMessage::MAX_EXPIRES_IN.".");
+        $this->setExpectedException('\InvalidArgumentException', "Expires In can't be greater than " . IronMQMessage::MAX_EXPIRES_IN . ".");
         $message = new IronMQMessage('Sample Message', array('expires_in' => IronMQMessage::MAX_EXPIRES_IN + 1));
     }
 
@@ -141,10 +141,10 @@ class IronMQMessageTest extends \PHPUnit_Framework_TestCase
     public function testCreatesArrayCopyProperly()
     {
         $data = array(
-            'body' => 'This is the message body',
+            'body'       => 'This is the message body',
             'properties' => array(
-                'timeout' => 500,
-                'delay' => 450,
+                'timeout'    => 500,
+                'delay'      => 450,
                 'expires_in' => 400,
             ),
         );
