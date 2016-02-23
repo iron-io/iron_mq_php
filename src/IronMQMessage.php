@@ -105,7 +105,7 @@ class IronMQMessage
     public function setExpiresIn($expires_in)
     {
         if ($expires_in > self::MAX_EXPIRES_IN) {
-            throw new \InvalidArgumentException("Expires In can't be greater than ".self::MAX_EXPIRES_IN.".");
+            throw new \InvalidArgumentException("Expires In can't be greater than " . self::MAX_EXPIRES_IN . ".");
         } else {
             $this->expires_in = $expires_in;
         }

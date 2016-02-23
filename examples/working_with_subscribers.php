@@ -27,8 +27,8 @@ $queueName = md5(rand() . time());
 // We add a 'type' => 'multicast' to turn this into a push queue, and attach a single subscriber
 $queueOptions = array(
     'message_expiration' => 3600,
-    'type' => 'multicast',
-    'push' => array(
+    'type'               => 'multicast',
+    'push'               => array(
         'subscribers' => array(
             array(
                 'url' => 'http://domain0.com/endpoint', 'name' => 'Sub 0'),
