@@ -1,7 +1,7 @@
 IronMQ v4 PHP Client Library
 -------------
 
-[IronMQ](http://www.iron.io/products/mq) is an elastic message queue for managing data and event flow within cloud applications and between systems.
+[IronMQ](https://www.iron.io/platform/ironmq/) is an elastic message queue for managing data and event flow within cloud applications and between systems.
 
 This library uses IronMQ API v3.
 
@@ -101,7 +101,7 @@ $ironmq = new \IronMQ\IronMQ(array(
 $ironmq = new \IronMQ\IronMQ('config.json');
 ```
 
-* Automatic [config](http://dev.iron.io/mq/reference/configuration/) search -
+* Automatic [config](http://dev.iron.io/mq/3/reference/configuration/) search -
 pass zero arguments to constructor and library will try to find config file in following locations:
 
     * `iron.ini` in current directory
@@ -628,7 +628,7 @@ Returns an array of subscribers with status.
 ### Acknowledge, That Push Message Is Processed
 
 This method could be used to acknowledgement process of push messages.
-See [IronMQ v3 documentation](http://dev.iron.io/mq-onpremise/reference/push_queues/#long_running_processes__aka_202s)
+See [IronMQ v3 documentation](http://dev.iron.io/mq/3/reference/push_queues/#long_running_processes__aka_202s)
 on long-processing for further information.
 
 ```php
@@ -641,10 +641,10 @@ $ironmq->deletePushMessage($queue_name, $message_id, $reservation_id, $subscribe
 
 ## Further Links
 
-* [IronMQ Overview](http://dev.iron.io/mq/)
-* [IronMQ REST/HTTP API](http://dev.iron.io/mq/reference/api/)
-* [Push Queues](http://dev.iron.io/mq/reference/push_queues/)
-* [Other Client Libraries](http://dev.iron.io/mq/libraries/)
+* [IronMQ Overview](http://dev.iron.io/mq/3/)
+* [IronMQ REST/HTTP API](http://dev.iron.io/mq/3/reference/api/)
+* [Push Queues](http://dev.iron.io/mq/3/reference/push_queues/)
+* [Other Client Libraries](http://dev.iron.io/mq/3/libraries/)
 * [Live Chat, Support & Fun](http://get.iron.io/chat)
 
 -------------
