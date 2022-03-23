@@ -21,7 +21,7 @@
         "phpunit/phpunit": "4.6.*",
         "squizlabs/php_codesniffer": "~2.3",
         "phpmd/phpmd": "~2.2",
-        "mikey179/vfsStream": "~1.5"
+        "mikey179/vfsstream": "~1.5"
     },
     "autoload": {
         "psr-4": {
