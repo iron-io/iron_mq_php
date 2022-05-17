@@ -452,42 +452,6 @@ $ironmq->clearQueue($queue_name);
 
 --
 
-### Add alerts to a queue. This is for Pull Queue only.
-
-```php
-<?php
-$first_alert = array(
-        'type' => 'fixed',
-        'direction' => 'desc',
-        'trigger' => 1001,
-        'snooze' => 10,
-        'queue' => 'test_alert_queue');
-$second_alert = array(
-        'type' => 'fixed',
-        'direction' => 'asc',
-        'trigger' => 1000,
-        'snooze' => 5,
-        'queue' => 'test_alert_queue',);
-
-$res = $ironmq->addAlerts("test_alert_queue", array($first_alert, $second_alert));
-```
-
-### Replace current queue alerts with a given list of alerts. This is for Pull Queue only.
-
-```php
-<?php
-$res = $ironmq->updateAlerts("test_alert_queue", array($first_alert, $second_alert));
-```
-
-### Remove alerts from a queue. This is for Pull Queue only.
-
-```php
-<?php
-$ironmq->deleteAlerts("test_alert_queue");
-```
-
---
-
 
 ## Push Queues
 
