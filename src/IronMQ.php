@@ -421,68 +421,7 @@ class IronMQ extends IronCore
         return self::json_decode($this->apiCall(self::POST, $url, $params));
     }
 
-    /**
-     * Add alerts to a queue. This is for Pull Queue only.
-     *
-     * @param string $queue_name
-     * @param array $alerts_hash
-     * @return mixed
-     */
-    public function addAlerts($queue_name, $alerts_hash)
-    {
-        $this->setJsonHeaders();
-        $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue";
-        $options = array(
-            'queue' => array(
-                'alerts' => $alerts_hash,
-            ),
-        );
-        return self::json_decode($this->apiCall(self::PUT, $url, $options));
-    }
-
-    /**
-     * Replace current queue alerts with a given list of alerts. This is for Pull Queue only.
-     *
-     * @param string $queue_name
-     * @param array $alerts_hash
-     * @return mixed
-     */
-    public function updateAlerts($queue_name, $alerts_hash)
-    {
-        return $this->addAlerts($queue_name, $alerts_hash);
-    }
-
-    /**
-     * Remove alerts from a queue. This is for Pull Queue only.
-     *
-     * @param string $queue_name
-     *
-     * @return mixed
-     * @deprecated
-     */
-    public function deleteAlerts($queue_name)
-    {
-        return $this->addAlerts($queue_name, array());
-    }
-
-    /**
-     * Remove alert from a queue by its ID. This is for Pull Queue only.
-     *
-     * @param string $queue_name
-     * @param string $alert_id
-     * @return mixed
-     * @deprecated
-     */
-    public function deleteAlertById($queue_name, $alert_id)
-    {
-        $this->setJsonHeaders();
-        $queue = rawurlencode($queue_name);
-        $url = "projects/{$this->project_id}/queues/$queue/alerts/$alert_id";
-
-        return self::json_decode($this->apiCall(self::DELETE, $url));
-    }
-
+    
     /**
      * Delete a Message Queue
      * This call deletes a message queue and all its messages.
