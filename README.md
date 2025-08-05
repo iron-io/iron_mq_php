@@ -3,7 +3,7 @@ IronMQ v4 PHP Client Library
 
 [IronMQ](https://www.iron.io/platform/ironmq/) is an elastic message queue for managing data and event flow within cloud applications and between systems.
 
-This library uses IronMQ API v3.
+This library uses [IronMQ API v3](https://dev.iron.io/mq/3/reference/api/).
 
 ## Branches
 
@@ -30,8 +30,8 @@ If you need some 1.x features like `.phar` archives, use latest 1.x stable versi
 
 To start using iron_mq_php, you need to sign up and get an oauth token.
 
-1. Go to http://iron.io/ and sign up.
-2. Get an Oauth Token at http://hud.iron.io/tokens
+1. Sign up [here](https://hud-e.iron.io/signup).
+2. Get a token at https://hud-e.iron.io/tokens
 
 --
 
@@ -46,7 +46,7 @@ Create `composer.json` file in project directory:
 ```json
 {
     "require": {
-        "iron-io/iron_mq": "2.*"
+        "iron-io/iron_mq": "4.*"
     }
 }
 ```
@@ -112,39 +112,6 @@ pass zero arguments to constructor and library will try to find config file in f
     * `.iron.json` in user's home directory
 
 --
-
-### Keystone Authentication
-
-#### Via Configuration File
-
-Add `keystone` section to your iron.json file:
-
-```javascript
-{
-  "project_id": "57a7b7b35e8e331d45000001",
-  "keystone": {
-    "server": "http://your.keystone.host/v2.0/",
-    "tenant": "some-group",
-    "username": "name",
-    "password": "password"
-  }
-}
-```
-
-#### In Code
-
-```php
-$keystone = array(
-    "server" => "http://your.keystone.host/v2.0/",
-    "tenant" => "some-gorup",
-    "username" => "name",
-    "password" => "password"
-);
-$ironmq = new \IronMQ\IronMQ(array(
-    "project_id" => '57a7b7b35e8e331d45000001',
-    "keystone" => $keystone
-));
-```
 
 ## The Basics
 
@@ -609,7 +576,6 @@ $ironmq->deletePushMessage($queue_name, $message_id, $reservation_id, $subscribe
 * [IronMQ REST/HTTP API](http://dev.iron.io/mq/3/reference/api/)
 * [Push Queues](http://dev.iron.io/mq/3/reference/push_queues/)
 * [Other Client Libraries](http://dev.iron.io/mq/3/libraries/)
-* [Live Chat, Support & Fun](http://get.iron.io/chat)
 
 -------------
-© 2011 - 2013 Iron.io Inc. All Rights Reserved.
+© 2011 - 2025 Iron.io Inc. All Rights Reserved.
